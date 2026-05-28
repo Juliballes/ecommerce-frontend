@@ -1,0 +1,14 @@
+.home-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.home-section {
+  padding: 0.5rem 0;
+}
+
+.home-divisor {
+  border: none;
+  border-top: 2px solid #eee;
+  margin: 0 2rem;
+}

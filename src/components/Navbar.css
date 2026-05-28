@@ -1,0 +1,98 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  height: 60px;
+  background: #1a1a2e;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.navbar-logo {
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.nav-link {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.nav-link:hover {
+  color: white;
+}
+
+.nav-link-admin {
+  color: #ffd700;
+  font-weight: 600;
+}
+
+.nav-link-register {
+  background: #007bff;
+  color: white !important;
+  padding: 0.4rem 0.9rem;
+  border-radius: 5px;
+}
+
+.nav-carrito {
+  position: relative;
+  color: white !important;
+  font-weight: 600;
+}
+
+.carrito-badge {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background: #e53935;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.nav-usuario {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.nav-nombre {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.btn-logout {
+  background: transparent;
+  border: 1px solid #555;
+  color: #ccc;
+  padding: 0.3rem 0.7rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.btn-logout:hover {
+  background: #333;
+  color: white;
+}
