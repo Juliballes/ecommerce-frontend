@@ -32,6 +32,7 @@ const Navbar = () => {
 
       <div className="navbar-links"> 
         <Link to="/" className="nav-link">Inicio</Link>
+        <Link to="/buscar" className="nav-link">Buscar</Link>
         
         {/* Solo mostramos "Agregar Producto" si el usuario es ADMIN */}
         {isAdmin && ( //Renderizado condicional con &&. Si isAdmin es false, el link de "+ Producto" directamente no existe en el DOM. Solo los admins lo ven.

@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import Carrito from './pages/Carrito';
 import Favorite from './pages/Favorite';
+import Buscar from './pages/Buscar';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AgregarProducto from './pages/AgregarProducto';
@@ -19,6 +20,9 @@ function App() {
       <Routes>
         {/* Ruta home: muestra el listado de productos y categorías */}
         <Route path="/" element={<Home />} />
+
+        {/* Búsqueda de productos */}
+        <Route path="/buscar" element={<Buscar />} />
 
         {/* Ruta dinámica: :id es el parámetro del producto */}
         <Route path="/products/:id" element={<ProductDetail />} />
