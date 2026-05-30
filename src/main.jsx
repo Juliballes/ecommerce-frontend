@@ -10,8 +10,8 @@ import { FavoriteProvider } from './context/FavoriteContext.jsx';
 // Envolvemos la app con:
 // - BrowserRouter: habilita el sistema de rutas de React Router
 // - AuthProvider: provee el contexto de autenticación (token, usuario)
-// - CarritoProvider: provee el contexto del carrito de compras
-// - FavoriteProvider: provee el contexto de productos favoritos
+// - CarritoProvider: carrito del usuario vía /api/cart (requiere login)
+// - FavoriteProvider: favoritos del usuario vía /api/favorites (requiere login)
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>

@@ -25,22 +25,11 @@ const Favorite = () => {
 
       <div className="favoritos-lista">
         {favoriteItems.map((product) => (
-          <div key={product.id} className="favorito-item">
-            <img
-              src={product.imagenes?.[0] || product.imagen || ''}
-              alt={product.nombre}
-              className="favorito-imagen"
-            />
-
+          <div key={product.favoritoId ?? product.id} className="favorito-item">
             <div className="favorito-info">
               <p className="favorito-nombre">{product.nombre}</p>
               <p className="favorito-precio">
                 ${Number(product.precio).toLocaleString('es-AR')}
-              </p>
-              <p className="favorito-stock">
-                {product.stock > 0
-                  ? `Stock: ${product.stock} unidades`
-                  : 'Sin stock'}
               </p>
             </div>
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { useCarrito } from '../context/CarritoContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { apiFetch } from '../services/api';
 import './Carrito.css';
 
 // Carrito: muestra los items del carrito y permite hacer checkout
@@ -18,29 +19,15 @@ const Carrito = () => {
       return;
     }
 
-    // Armamos el body del pedido con los items del carrito
-    const pedido = {
-      items: items.map((item) => ({
-        productoId: item.id,
-        cantidad: item.cantidad,
-      })),
-    };
-
     try {
-      const response = await fetch('http://localhost:8080/api/pedidos', {
+      await apiFetch('/pedidos/checkout', {
+        token,
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Enviamos el token JWT en el header Authorization
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(pedido),
+        body: {},
       });
 
-      if (!response.ok) throw new Error('Error al realizar el pedido');
-
       alert('¡Pedido realizado con éxito! Se descontó el stock.');
-      vaciarCarrito();
+      await vaciarCarrito();
       navigate('/');
     } catch (err) {
       alert('Error: ' + err.message);
@@ -67,7 +54,7 @@ const Carrito = () => {
       {/* Lista de items con .map() — renderizado de listas */}
       <div className="carrito-lista">
         {items.map((item) => (
-          <div key={item.id} className="carrito-item">
+          <div key={item.lineaId} className="carrito-item">
             <img
               src={item.imagenes?.[0] || item.imagen || ''}
               alt={item.nombre}
@@ -87,7 +74,7 @@ const Carrito = () => {
               {/* Eliminar un item del carrito */}
               <button
                 className="btn-eliminar"
-                onClick={() => eliminarDelCarrito(item.id)}
+                onClick={() => eliminarDelCarrito(item.lineaId)}
               >
                 Eliminar
               </button>

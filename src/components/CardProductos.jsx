@@ -1,17 +1,26 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useFavorite } from '../context/FavoriteContext';
+import { useAuth } from '../context/AuthContext';
 import './CardProductos.css';
 
 // CardProductos recibe el objeto product y children (badges de envío)
 // Los children se pasan desde ProductList de forma condicional
 const CardProductos = ({ product, children }) => {
   const { favoriteItems, addToFavorite, removeFromFavorite } = useFavorite();
+  const { token } = useAuth();
+  const navigate = useNavigate();
   const isFavorite = favoriteItems.some((item) => item.id === product.id);
 
-  const handleFavoriteClick = (e) => {
+  const handleFavoriteClick = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    isFavorite ? removeFromFavorite(product.id) : addToFavorite(product);
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    if (isFavorite) await removeFromFavorite(product.id);
+    else await addToFavorite(product);
   };
 
   return (

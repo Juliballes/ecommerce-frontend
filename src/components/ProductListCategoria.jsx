@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useFavorite } from '../context/FavoriteContext';
+import { useAuth } from '../context/AuthContext';
 import './ProductListCategoria.css';
 
 // ProductListCategoria: muestra las categorías disponibles desde la API
@@ -8,7 +9,9 @@ import './ProductListCategoria.css';
 // useEffect con [categoriaSeleccionada] se re-ejecuta cada vez que cambia el filtro
 const ProductListCategoria = () => {
   const { favoriteItems, addToFavorite, removeFromFavorite } = useFavorite();
-  const [categorias, setCategorias] = useState([]); //Guarda el array de categorías que vienen del backend. Arranca vacío.
+  const { token } = useAuth();
+  const navigate = useNavigate();
+  const [categorias, setCategorias] = useState([]);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);//Guarda el id de la categoría que el usuario clickeó. Arranca en null porque ninguna está seleccionada todavía. Este estado es la clave de todo el componente — cuando cambia, dispara el segundo useEffect.
   const [productosFiltrados, setProductosFiltrados] = useState([]);//Guarda los productos que devuelve el backend al filtrar por categoría.
   const [loadingCategorias, setLoadingCategorias] = useState(true);//Loading específico para las categorías. Arranca en true.
@@ -105,10 +108,15 @@ const ProductListCategoria = () => {
                   <button
                     type="button"
                     className="btn-favorito-mini"
-                    onClick={(e) => {
+                    onClick={async (e) => {
                       e.preventDefault();
+                      if (!token) {
+                        navigate('/login');
+                        return;
+                      }
                       const isFav = favoriteItems.some((item) => item.id === product.id);
-                      isFav ? removeFromFavorite(product.id) : addToFavorite(product);
+                      if (isFav) await removeFromFavorite(product.id);
+                      else await addToFavorite(product);
                     }}
                   >
                     {favoriteItems.some((item) => item.id === product.id) ? '❤️' : '🤍'}

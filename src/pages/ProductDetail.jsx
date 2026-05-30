@@ -39,17 +39,19 @@ const ProductDetail = () => {
     fetchProduct();
   }, [id]); // Dependencia [id]: si el usuario navega a otro producto, se vuelve a llamar
 
-  const handleAgregarAlCarrito = () => {
+  const handleAgregarAlCarrito = async () => {
     if (!token) {
       // Si no está logueado, redirigimos al login (useNavigate)
       navigate('/login');
       return;
     }
     if (product.stock > 0) {
-      agregarAlCarrito(product);
-      setAgregado(true);
+      const ok = await agregarAlCarrito(product);
+      if (ok) {
+        setAgregado(true);
       // Después de 2 segundos, ocultamos el mensaje de confirmación
-      setTimeout(() => setAgregado(false), 2000);
+        setTimeout(() => setAgregado(false), 2000);
+      }
     }
   };
 
@@ -112,9 +114,14 @@ const ProductDetail = () => {
 
           <button
             className="btn-favorito-detalle"
-            onClick={() =>
-              isFavorite ? removeFromFavorite(product.id) : addToFavorite(product)
-            }
+            onClick={async () => {
+              if (!token) {
+                navigate('/login');
+                return;
+              }
+              if (isFavorite) await removeFromFavorite(product.id);
+              else await addToFavorite(product);
+            }}
           >
             {isFavorite ? '❤️ Quitar de favoritos' : '🤍 Agregar a favoritos'}
           </button>

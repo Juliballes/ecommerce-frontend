@@ -1,4 +1,6 @@
-import React, { useState, useContext, createContext } from 'react';
+import React, { useState, useContext, createContext, useEffect } from 'react';
+import { useAuth } from './AuthContext';
+import { apiFetch } from '../services/api';
 
 const FavoriteContext = createContext();
 
@@ -10,20 +12,65 @@ export function useFavorite() {
   return context;
 }
 
+const mapFavorito = (fav) => ({
+  favoritoId: fav.id,
+  id: fav.productId,
+  nombre: fav.nombreProducto,
+  precio: fav.precio,
+});
+
 export function FavoriteProvider({ children }) {
+  const { token } = useAuth();
   const [favoriteItems, setFavoriteItems] = useState([]);
 
-  const addToFavorite = (product) => {
-    setFavoriteItems((prevItems) => {
-      const exists = prevItems.some((item) => item.id === product.id);
-      if (exists) return prevItems;
-      return [...prevItems, product];
-    });
-    console.log(`${product.nombre} agregado a favoritos!`);
+  useEffect(() => {
+    if (!token) {
+      setFavoriteItems([]);
+      return;
+    }
+
+    const cargarFavoritos = async () => {
+      try {
+        const data = await apiFetch('/favorites', { token });
+        setFavoriteItems(data.map(mapFavorito));
+      } catch {
+        setFavoriteItems([]);
+      }
+    };
+
+    cargarFavoritos();
+  }, [token]);
+
+  const addToFavorite = async (product) => {
+    if (!token) return false;
+
+    try {
+      await apiFetch('/favorites', {
+        token,
+        method: 'POST',
+        body: { productId: product.id },
+      });
+      const data = await apiFetch('/favorites', { token });
+      setFavoriteItems(data.map(mapFavorito));
+      return true;
+    } catch {
+      return false;
+    }
   };
 
-  const removeFromFavorite = (id) => {
-    setFavoriteItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  const removeFromFavorite = async (productId) => {
+    if (!token) return false;
+
+    const favorito = favoriteItems.find((item) => item.id === productId);
+    if (!favorito?.favoritoId) return false;
+
+    try {
+      await apiFetch(`/favorites/${favorito.favoritoId}`, { token, method: 'DELETE' });
+      setFavoriteItems((prev) => prev.filter((item) => item.id !== productId));
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   const value = { favoriteItems, addToFavorite, removeFromFavorite };
