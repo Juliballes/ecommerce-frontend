@@ -1,12 +1,30 @@
 import React from 'react';
+import { useFavorite } from '../context/FavoriteContext';
 import './CardProductos.css';
 
 // CardProductos recibe el objeto product y children (badges de envío)
 // Los children se pasan desde ProductList de forma condicional
 const CardProductos = ({ product, children }) => {
+  const { favoriteItems, addToFavorite, removeFromFavorite } = useFavorite();
+  const isFavorite = favoriteItems.some((item) => item.id === product.id);
+
+  const handleFavoriteClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    isFavorite ? removeFromFavorite(product.id) : addToFavorite(product);
+  };
+
   return (
     <div className="card-producto">
       <div className="producto-imagen-container">
+        <button
+          type="button"
+          className={`btn-favorito ${isFavorite ? 'activo' : ''}`}
+          onClick={handleFavoriteClick}
+          aria-label={isFavorite ? 'En favoritos' : 'Agregar a favoritos'}
+        >
+          {isFavorite ? '❤️' : '🤍'}
+        </button>
         <img
           src={product.imagenes?.[0] || product.imagen || ''}
           alt={product.nombre}

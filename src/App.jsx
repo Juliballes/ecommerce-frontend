@@ -1,8 +1,10 @@
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import Carrito from './pages/Carrito';
+import Favorite from './pages/Favorite';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AgregarProducto from './pages/AgregarProducto';
@@ -23,6 +25,16 @@ function App() {
 
         {/* Carrito de compras */}
         <Route path="/carrito" element={<Carrito />} />
+
+        {/* Favoritos: ruta protegida, requiere login */}
+        <Route
+          path="/favoritos"
+          element={
+            <ProtectedRoute>
+              <Favorite />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Login y registro */}
         <Route path="/login" element={<Login />} />

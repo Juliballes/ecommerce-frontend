@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom'; //useNavigate — hook para redirigir por código, no por click del usuario
 import { useCarrito } from '../context/CarritoContext'; //Importa el hook personalizado del carrito. Le da acceso al estado global del carrito (cuántos items hay).
+import { useFavorite } from '../context/FavoriteContext';
 import { useAuth } from '../context/AuthContext'; // Importa el hook de autenticación. Le da acceso al usuario logueado, la función logout, y si es admin.
 import './Navbar.css';
 
@@ -8,6 +9,7 @@ import './Navbar.css';
 // Usa Link de react-router-dom (no <a>) para navegar sin recargar la página (SPA)
 const Navbar = () => {
   const { cantidadTotal } = useCarrito(); //Lee del CarritoContext cuántos items hay en el carrito en total. Este número se usa para el badge rojo del ícono.
+  const { favoriteItems } = useFavorite();
   const { usuario, logout, isAdmin } = useAuth(); //Lee tres cosas del AuthContext:
                                                   //usuario — objeto con los datos del usuario logueado (o null si no hay nadie)
                                                   //logout — función que limpia el token y el usuario del estado y del localStorage
@@ -37,6 +39,14 @@ const Navbar = () => {
             + Producto
           </Link> //Ruta protegida de admin. Solo se renderiza si pasó el && de arriba.
         )}
+
+        {/* Favoritos con badge de cantidad */}
+        <Link to="/favoritos" className="nav-link nav-favoritos">
+          ❤️ Favoritos
+          {favoriteItems.length > 0 && (
+            <span className="carrito-badge">{favoriteItems.length}</span>
+          )}
+        </Link>
 
         {/* Mostramos carrito con badge de cantidad */}
         <Link to="/carrito" className="nav-link nav-carrito"> {/* Link al carrito. */}

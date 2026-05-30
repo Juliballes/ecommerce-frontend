@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useFavorite } from '../context/FavoriteContext';
 import './ProductListCategoria.css';
 
 // ProductListCategoria: muestra las categorías disponibles desde la API
 // Cuando el usuario hace click en una, filtra los productos de esa categoría
 // useEffect con [categoriaSeleccionada] se re-ejecuta cada vez que cambia el filtro
 const ProductListCategoria = () => {
+  const { favoriteItems, addToFavorite, removeFromFavorite } = useFavorite();
   const [categorias, setCategorias] = useState([]); //Guarda el array de categorías que vienen del backend. Arranca vacío.
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);//Guarda el id de la categoría que el usuario clickeó. Arranca en null porque ninguna está seleccionada todavía. Este estado es la clave de todo el componente — cuando cambia, dispara el segundo useEffect.
   const [productosFiltrados, setProductosFiltrados] = useState([]);//Guarda los productos que devuelve el backend al filtrar por categoría.
@@ -99,23 +101,35 @@ const ProductListCategoria = () => {
           ) : (//Si no está cargando y hay productos, muestra la grilla.
             <div className="grid-filtrado">
               {productosFiltrados.map((product) => (//Renderiza cada producto filtrado con .map().
-                <Link //Cada mini-card es un link que navega al detalle del producto sin recargar la página.
-                  to={`/products/${product.id}`}
-                  key={product.id}  
-                  className="card-mini"
-                >
-                  <img
-                    src={product.imagenes?.[0] || product.imagen || ''}
-                    alt={product.nombre}
-                    className="card-mini-img"
-                  />
-                  <div className="card-mini-info">
-                    <p className="card-mini-nombre">{product.nombre}</p>
-                    <p className="card-mini-precio">
-                      ${Number(product.precio).toLocaleString('es-AR')}
-                    </p>
-                  </div>
-                </Link>
+                <div key={product.id} className="card-mini">
+                  <button
+                    type="button"
+                    className="btn-favorito-mini"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const isFav = favoriteItems.some((item) => item.id === product.id);
+                      isFav ? removeFromFavorite(product.id) : addToFavorite(product);
+                    }}
+                  >
+                    {favoriteItems.some((item) => item.id === product.id) ? '❤️' : '🤍'}
+                  </button>
+                  <Link
+                    to={`/products/${product.id}`}
+                    className="card-mini-link"
+                  >
+                    <img
+                      src={product.imagenes?.[0] || product.imagen || ''}
+                      alt={product.nombre}
+                      className="card-mini-img"
+                    />
+                    <div className="card-mini-info">
+                      <p className="card-mini-nombre">{product.nombre}</p>
+                      <p className="card-mini-precio">
+                        ${Number(product.precio).toLocaleString('es-AR')}
+                      </p>
+                    </div>
+                  </Link>
+                </div>
               ))}
             </div>
           )}

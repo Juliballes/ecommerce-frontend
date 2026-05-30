@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCarrito } from '../context/CarritoContext';
+import { useFavorite } from '../context/FavoriteContext';
 import { useAuth } from '../context/AuthContext';
 import './ProductDetail.css';
 
@@ -10,6 +11,7 @@ const ProductDetail = () => {
   const { id } = useParams(); // Obtenemos el parámetro id de la URL
   const navigate = useNavigate(); // Para redirigir programáticamente
   const { agregarAlCarrito } = useCarrito();
+  const { favoriteItems, addToFavorite, removeFromFavorite } = useFavorite();
   const { token } = useAuth();
 
   const [product, setProduct] = useState(null);
@@ -55,6 +57,8 @@ const ProductDetail = () => {
   if (loading) return <div className="detalle-estado">Cargando producto...</div>;
   if (error) return <div className="detalle-estado detalle-error">Error: {error}</div>;
   if (!product) return null;
+
+  const isFavorite = favoriteItems.some((item) => item.id === product.id);
 
   return (
     <div className="detalle-container">
@@ -104,6 +108,15 @@ const ProductDetail = () => {
             onClick={handleAgregarAlCarrito}
           >
             {product.stock > 0 ? 'Agregar al carrito' : 'Sin stock'}
+          </button>
+
+          <button
+            className="btn-favorito-detalle"
+            onClick={() =>
+              isFavorite ? removeFromFavorite(product.id) : addToFavorite(product)
+            }
+          >
+            {isFavorite ? '❤️ Quitar de favoritos' : '🤍 Agregar a favoritos'}
           </button>
         </div>
       </div>

@@ -61,17 +61,39 @@
 }
 
 .card-mini {
+  position: relative;
   border: 1px solid #eee;
   border-radius: 8px;
   overflow: hidden;
-  text-decoration: none;
-  color: inherit;
   transition: box-shadow 0.2s;
   background: white;
 }
 
 .card-mini:hover {
   box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.btn-favorito-mini {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-mini-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
 }
 
 .card-mini-img {
