@@ -41,6 +41,15 @@ const Navbar = () => {
           </Link> //Ruta protegida de admin. Solo se renderiza si pasó el && de arriba.
         )}
 
+        {/* Pedidos: solo visibles si hay sesión (las rutas usan ProtectedRoute) */}
+        {usuario && (
+          <>
+            <Link to="/mis-pedidos" className="nav-link">Mis pedidos</Link>
+            <Link to="/mis-compras" className="nav-link">Mis compras</Link>
+            <Link to="/mis-ventas" className="nav-link">Mis ventas</Link>
+          </>
+        )}
+
         {/* Favoritos con badge de cantidad */}
         <Link to="/favoritos" className="nav-link nav-favoritos">
           ❤️ Favoritos

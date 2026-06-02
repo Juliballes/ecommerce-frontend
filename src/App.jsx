@@ -9,6 +9,9 @@ import Buscar from './pages/Buscar';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AgregarProducto from './pages/AgregarProducto';
+import MisPedidos from './pages/MisPedidos';
+import MisCompras from './pages/MisCompras';
+import MisVentas from './pages/MisVentas';
 import './App.css';
 
 // App define todas las rutas de la aplicación
@@ -36,6 +39,32 @@ function App() {
           element={
             <ProtectedRoute>
               <Favorite />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Historial de pedidos (requieren JWT en el backend) */}
+        <Route
+          path="/mis-pedidos"
+          element={
+            <ProtectedRoute>
+              <MisPedidos />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mis-compras"
+          element={
+            <ProtectedRoute>
+              <MisCompras />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mis-ventas"
+          element={
+            <ProtectedRoute>
+              <MisVentas />
             </ProtectedRoute>
           }
         />

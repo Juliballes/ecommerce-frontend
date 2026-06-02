@@ -31,9 +31,9 @@ const Login = () => {
 
       if (!response.ok) throw new Error('Email o contraseña incorrectos');
 
-      const data = await response.json();
-      // Guardamos el token y el usuario en el contexto (y localStorage)
-      login(data.token, data.usuario || { email: form.email });
+      // El backend devuelve el JWT como texto plano (no JSON): "eyJhbGciOi..."
+      const tokenJwt = await response.text();
+      login(tokenJwt, { email: form.email });
       // useNavigate: redirigimos al home después del login
       navigate('/');
     } catch (err) {
