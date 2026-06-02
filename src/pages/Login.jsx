@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { apiFetch } from '../services/api';
 import './FormAuth.css';
 
 // Login: POST /api/auth/login — el backend responde con el JWT en texto plano
@@ -32,8 +33,15 @@ const Login = () => {
 
       // response.text() porque el backend no devuelve JSON — si uso .json() rompe
       const tokenJwt = await response.text();
-      login(tokenJwt, { email: form.email }); // guardo token y usuario en AuthContext + localStorage
-      navigate('/'); // redirijo al home después del login
+
+      const perfil = await apiFetch('/usuarios/me', { token: tokenJwt });
+      login(tokenJwt, {
+        email: perfil.email,
+        nombre: perfil.nombre,
+        username: perfil.nombreUsuario,
+        role: perfil.role,
+      });
+      navigate('/');
     } catch (err) {
       setError(err.message);
     } finally {

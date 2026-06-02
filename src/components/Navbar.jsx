@@ -38,6 +38,7 @@ const Navbar = () => {
         {/* Links de pedidos — solo los muestro si hay sesión */}
         {usuario && (
           <>
+            <Link to="/perfil" className="nav-link">Mi perfil</Link>
             <Link to="/mis-compras" className="nav-link">Mis compras</Link>
             <Link to="/mis-ventas" className="nav-link">Mis ventas</Link>
           </>

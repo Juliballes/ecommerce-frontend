@@ -11,6 +11,7 @@ import Register from './pages/Register';
 import AgregarProducto from './pages/AgregarProducto';
 import MisCompras from './pages/MisCompras';
 import MisVentas from './pages/MisVentas';
+import Perfil from './pages/Perfil';
 import './App.css';
 
 function App() {
@@ -54,6 +55,14 @@ function App() {
           element={
             <ProtectedRoute>
               <MisVentas />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/perfil"
+          element={
+            <ProtectedRoute>
+              <Perfil />
             </ProtectedRoute>
           }
         />
