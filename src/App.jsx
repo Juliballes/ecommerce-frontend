@@ -9,7 +9,6 @@ import Buscar from './pages/Buscar';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AgregarProducto from './pages/AgregarProducto';
-import MisPedidos from './pages/MisPedidos';
 import MisCompras from './pages/MisCompras';
 import MisVentas from './pages/MisVentas';
 import './App.css';
@@ -41,20 +40,12 @@ function App() {
           }
         />
 
-        {/* Mis compras (detalle + reseñas); /mis-pedidos redirige acá */}
+        {/* Mis compras: detalle de pedidos y reseñas */}
         <Route
           path="/mis-compras"
           element={
             <ProtectedRoute>
               <MisCompras />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/mis-pedidos"
-          element={
-            <ProtectedRoute>
-              <MisPedidos />
             </ProtectedRoute>
           }
         />
