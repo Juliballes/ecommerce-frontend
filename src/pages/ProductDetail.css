@@ -112,3 +112,113 @@
 }
 
 .detalle-error { color: #c62828; }
+
+.detalle-vendedor {
+  color: #666;
+  margin: 0.5rem 0;
+}
+
+.detalle-reputacion {
+  color: #f57c00;
+  font-weight: 600;
+  margin: 0.25rem 0 1rem;
+}
+
+.resenas-seccion {
+  max-width: 900px;
+  margin: 2rem auto 0;
+  padding: 0 1rem 2rem;
+}
+
+.resenas-seccion h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.resenas-vacio,
+.resena-ayuda {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.resenas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.resena-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.resena-autor {
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+
+.resena-estrellas {
+  margin: 0 0 0.5rem;
+}
+
+.resena-comentario {
+  margin: 0 0 0.5rem;
+  color: #444;
+}
+
+.resena-fecha {
+  font-size: 0.8rem;
+  color: #888;
+  margin: 0;
+}
+
+.resena-form {
+  background: white;
+  border-radius: 10px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+}
+
+.resena-form h3 {
+  margin: 0;
+}
+
+.form-grupo-resena {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form-grupo-resena label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.resena-form input,
+.resena-form select,
+.resena-form textarea {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.resena-error {
+  color: #c62828;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.btn-link-resena {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-weight: 600;
+}

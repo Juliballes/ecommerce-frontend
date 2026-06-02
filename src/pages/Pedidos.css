@@ -89,6 +89,157 @@
   color: #555;
 }
 
+.pedido-linea-detalle {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.pedido-linea-detalle:last-child {
+  border-bottom: none;
+}
+
+.pedido-producto-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.pedido-producto-link:hover {
+  text-decoration: underline;
+}
+
+.btn-resena-item {
+  margin-top: 0.4rem;
+  background: none;
+  border: 1px solid #007bff;
+  color: #007bff;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-resena-item:hover {
+  background: #e3f2fd;
+}
+
+.resena-hecha {
+  display: inline-block;
+  margin-top: 0.4rem;
+  font-size: 0.85rem;
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.resena-form-pedido {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.resena-form-fila {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.resena-form-fila label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.resena-form-fila select,
+.resena-form-fila textarea {
+  padding: 0.45rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.resena-error-pedido {
+  color: #c62828;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.resena-form-acciones {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-resena-publicar {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.btn-resena-publicar:disabled {
+  background: #bdbdbd;
+  cursor: not-allowed;
+}
+
+.btn-resena-cancelar {
+  background: none;
+  border: 1px solid #ccc;
+  color: #666;
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.pedido-accion-recepcion {
+  margin: 0.75rem 0;
+  padding: 0.75rem;
+  background: #e8f5e9;
+  border-radius: 8px;
+}
+
+.pedido-ayuda,
+.pedido-ayuda-item {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0.35rem 0 0;
+}
+
+.pedido-ayuda-item {
+  margin-top: 0.4rem;
+}
+
+.btn-confirmar-recepcion {
+  margin-top: 0.5rem;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.btn-confirmar-recepcion:disabled {
+  background: #a5d6a7;
+  cursor: not-allowed;
+}
+
+.pedido-item-id {
+  color: #888;
+  font-size: 0.8rem;
+}
+
 .pedidos-vacio,
 .pedidos-estado,
 .pedidos-error {

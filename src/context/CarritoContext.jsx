@@ -4,6 +4,7 @@ import { apiFetch } from '../services/api';
 
 const CarritoContext = createContext();
 
+// Adapto la respuesta del backend al formato que usa la UI del carrito
 const mapLineas = (lineas) =>
   lineas.map((linea) => ({
     lineaId: linea.id,
@@ -18,6 +19,7 @@ export const CarritoProvider = ({ children }) => {
   const { token } = useAuth();
   const [items, setItems] = useState([]);
 
+  // Recargo el carrito cada vez que cambia el token (login/logout)
   useEffect(() => {
     if (!token) {
       setItems([]);
@@ -26,7 +28,7 @@ export const CarritoProvider = ({ children }) => {
 
     const cargarCarrito = async () => {
       try {
-        const data = await apiFetch('/cart', { token });
+        const data = await apiFetch('/cart', { token }); // GET /api/cart
         setItems(mapLineas(data));
       } catch {
         setItems([]);
@@ -37,7 +39,7 @@ export const CarritoProvider = ({ children }) => {
   }, [token]);
 
   const agregarAlCarrito = async (producto) => {
-    if (!token) return false;
+    if (!token) return false; // sin sesión no puedo tocar el carrito del backend
 
     try {
       const data = await apiFetch('/cart', {
@@ -80,6 +82,7 @@ export const CarritoProvider = ({ children }) => {
   const calcularTotal = () =>
     items.reduce((total, item) => total + item.precio * item.cantidad, 0);
 
+  // Suma de cantidades — lo uso para el badge del Navbar
   const cantidadTotal = items.reduce((acc, item) => acc + item.cantidad, 0);
 
   return (

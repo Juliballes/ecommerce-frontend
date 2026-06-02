@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useFavorite } from '../context/FavoriteContext';
 import './Favorite.css';
 
+// Página de favoritos — la lista vive en FavoriteContext (GET /api/favorites)
 const Favorite = () => {
   const { favoriteItems, removeFromFavorite } = useFavorite();
   const navigate = useNavigate();

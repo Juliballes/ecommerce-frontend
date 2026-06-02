@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './FormAuth.css';
 
-// Register: formulario de registro de nuevo usuario
-// Llama a POST /api/auth/register con los datos del formulario
+// Registro de usuario nuevo — POST /api/auth/register
 const Register = () => {
   const [form, setForm] = useState({
     username: '',
@@ -26,7 +25,7 @@ const Register = () => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:8080/api/auth/register', {//Cuando el usuario hace click en "Crear cuenta", se ejecuta handleSubmit, que hace un POST a /api/auth/register con esos datos en el body como JSON. Si el backend responde OK, redirigimos al login con useNavigate.
+      const response = await fetch('http://localhost:8080/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
@@ -34,8 +33,8 @@ const Register = () => {
 
       if (!response.ok) throw new Error('Error al registrarse. Revisá los datos.');
 
+      // No hago login automático: mando al usuario a la pantalla de login
       alert('¡Registro exitoso! Ya podés iniciar sesión.');
-      // useNavigate: redirigimos al login después del registro
       navigate('/login');
     } catch (err) {
       setError(err.message);

@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import CardProductos from '../components/CardProductos';
 import './Buscar.css';
 
+// Búsqueda con query string ?q= — useSearchParams lee y escribe la URL
 const Buscar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const q = searchParams.get('q') || '';
@@ -12,6 +13,7 @@ const Buscar = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Cada vez que cambia q en la URL, disparo el GET al backend
   useEffect(() => {
     setQuery(q);
 
@@ -31,6 +33,7 @@ const Buscar = () => {
         );
         if (!response.ok) throw new Error('Error al buscar productos');
         const data = await response.json();
+        // Spring devuelve Page: content[]; por las dudas acepto también un array plano
         setProducts(data.content ?? data);
       } catch (err) {
         setError(err.message);

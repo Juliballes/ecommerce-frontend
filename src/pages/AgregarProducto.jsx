@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './AgregarProducto.css';
 
-// AgregarProducto: solo accesible para usuarios con rol ADMIN
-// Llama a POST /api/productos con el token JWT en el header
+// Formulario admin para publicar productos (POST /api/productos)
 const AgregarProducto = () => {
   const { token, isAdmin } = useAuth();
   const navigate = useNavigate();
@@ -21,7 +20,6 @@ const AgregarProducto = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Cargamos las categorías disponibles desde la API
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
@@ -43,7 +41,6 @@ const AgregarProducto = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Renderizado condicional: si no es admin, redirigimos
     if (!isAdmin) {
       alert('No tenés permisos para realizar esta acción.');
       navigate('/');
@@ -67,7 +64,6 @@ const AgregarProducto = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // Token JWT obligatorio para POST /api/productos
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(nuevoProducto),
@@ -84,7 +80,6 @@ const AgregarProducto = () => {
     }
   };
 
-  // Si no es admin, mostramos acceso denegado
   if (!token) {
     return (
       <div className="ap-denegado">

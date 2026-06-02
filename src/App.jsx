@@ -14,8 +14,6 @@ import MisCompras from './pages/MisCompras';
 import MisVentas from './pages/MisVentas';
 import './App.css';
 
-// App define todas las rutas de la aplicación
-// Routes agrupa las rutas, Route define cada una con su path y componente
 function App() {
   return (
     <div>
@@ -43,20 +41,20 @@ function App() {
           }
         />
 
-        {/* Historial de pedidos (requieren JWT en el backend) */}
-        <Route
-          path="/mis-pedidos"
-          element={
-            <ProtectedRoute>
-              <MisPedidos />
-            </ProtectedRoute>
-          }
-        />
+        {/* Mis compras (detalle + reseñas); /mis-pedidos redirige acá */}
         <Route
           path="/mis-compras"
           element={
             <ProtectedRoute>
               <MisCompras />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mis-pedidos"
+          element={
+            <ProtectedRoute>
+              <MisPedidos />
             </ProtectedRoute>
           }
         />

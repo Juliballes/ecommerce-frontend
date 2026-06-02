@@ -4,16 +4,17 @@ import { apiFetch } from '../services/api';
 
 const FavoriteContext = createContext();
 
+// Hook custom — tiro error si lo uso fuera del Provider (me ayuda a debuggear)
 export function useFavorite() {
   const context = useContext(FavoriteContext);
   if (context === undefined) {
-    throw new Error('useFavorite debe ser usado dentro de un FavoriteProvider');
+    throw new Error('Falta FavoriteProvider en main.jsx');
   }
   return context;
 }
 
 const mapFavorito = (fav) => ({
-  favoritoId: fav.id,
+  favoritoId: fav.id, // id del registro en /api/favorites (lo necesito para DELETE)
   id: fav.productId,
   nombre: fav.nombreProducto,
   precio: fav.precio,
@@ -23,6 +24,7 @@ export function FavoriteProvider({ children }) {
   const { token } = useAuth();
   const [favoriteItems, setFavoriteItems] = useState([]);
 
+  // GET /api/favorites al montar o cuando cambia la sesión
   useEffect(() => {
     if (!token) {
       setFavoriteItems([]);

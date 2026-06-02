@@ -3,32 +3,46 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useCarrito } from '../context/CarritoContext';
 import { useFavorite } from '../context/FavoriteContext';
 import { useAuth } from '../context/AuthContext';
+import { apiFetch } from '../services/api';
 import './ProductDetail.css';
 
-// ProductDetail: muestra el detalle de un producto
-// useParams() lee el :id de la URL (ruta dinámica /products/:id)
+// Detalle de producto — :id viene de la ruta /products/:id (useParams)
 const ProductDetail = () => {
-  const { id } = useParams(); // Obtenemos el parámetro id de la URL
-  const navigate = useNavigate(); // Para redirigir programáticamente
+  const { id } = useParams();
+  const navigate = useNavigate();
   const { agregarAlCarrito } = useCarrito();
   const { favoriteItems, addToFavorite, removeFromFavorite } = useFavorite();
   const { token } = useAuth();
 
   const [product, setProduct] = useState(null);
+  const [resenas, setResenas] = useState([]);
+  const [resumenVendedor, setResumenVendedor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [agregado, setAgregado] = useState(false);
 
-  // useEffect con [id]: se ejecuta al montar Y cada vez que cambia el id de la URL
+  // Cargo producto + reseñas + reputación del vendedor cuando cambia el id
   useEffect(() => {
-    const fetchProduct = async () => {
+    const cargar = async () => {
       setLoading(true);
+      setError(null);
       try {
-        // GET /api/productos/:id es público (no necesita token)
         const response = await fetch(`http://localhost:8080/api/productos/${id}`);
         if (!response.ok) throw new Error('Producto no encontrado');
         const data = await response.json();
         setProduct(data);
+
+        const listaResenas = await apiFetch(`/resenas/productos/${id}`);
+        setResenas(listaResenas);
+
+        if (data.vendedorId) {
+          try {
+            const resumen = await apiFetch(`/resenas/vendedores/${data.vendedorId}`);
+            setResumenVendedor(resumen);
+          } catch {
+            setResumenVendedor(null);
+          }
+        }
       } catch (err) {
         setError(err.message);
       } finally {
@@ -36,12 +50,11 @@ const ProductDetail = () => {
       }
     };
 
-    fetchProduct();
-  }, [id]); // Dependencia [id]: si el usuario navega a otro producto, se vuelve a llamar
+    cargar();
+  }, [id]);
 
   const handleAgregarAlCarrito = async () => {
     if (!token) {
-      // Si no está logueado, redirigimos al login (useNavigate)
       navigate('/login');
       return;
     }
@@ -49,13 +62,11 @@ const ProductDetail = () => {
       const ok = await agregarAlCarrito(product);
       if (ok) {
         setAgregado(true);
-      // Después de 2 segundos, ocultamos el mensaje de confirmación
         setTimeout(() => setAgregado(false), 2000);
       }
     }
   };
 
-  // Renderizado condicional según el estado
   if (loading) return <div className="detalle-estado">Cargando producto...</div>;
   if (error) return <div className="detalle-estado detalle-error">Error: {error}</div>;
   if (!product) return null;
@@ -78,7 +89,6 @@ const ProductDetail = () => {
         </div>
 
         <div className="detalle-info">
-          {/* Categoría */}
           {product.categorias?.[0]?.nombre && (
             <span className="detalle-categoria">{product.categorias[0].nombre}</span>
           )}
@@ -86,11 +96,21 @@ const ProductDetail = () => {
           <h1 className="detalle-nombre">{product.nombre}</h1>
           <p className="detalle-descripcion">{product.descripcion}</p>
 
+          {product.vendedorNombre && (
+            <p className="detalle-vendedor">Vendido por: {product.vendedorNombre}</p>
+          )}
+
+          {resumenVendedor && (
+            <p className="detalle-reputacion">
+              ⭐ {resumenVendedor.promedioPuntuacion?.toFixed(1)} —{' '}
+              {resumenVendedor.cantidadResenas} reseñas
+            </p>
+          )}
+
           <p className="detalle-precio">
             ${Number(product.precio).toLocaleString('es-AR')}
           </p>
 
-          {/* Renderizado condicional: stock */}
           <div className="detalle-stock">
             {product.stock > 0 ? (
               <span className="en-stock">✔ {product.stock} unidades disponibles</span>
@@ -99,7 +119,6 @@ const ProductDetail = () => {
             )}
           </div>
 
-          {/* Mensaje de éxito al agregar al carrito */}
           {agregado && (
             <div className="alerta-agregado">✔ Producto agregado al carrito</div>
           )}
@@ -127,6 +146,27 @@ const ProductDetail = () => {
           </button>
         </div>
       </div>
+
+      <section className="resenas-seccion">
+        <h2>Reseñas ({resenas.length})</h2>
+
+        {resenas.length === 0 ? (
+          <p className="resenas-vacio">Todavía no hay reseñas para este producto.</p>
+        ) : (
+          <div className="resenas-lista">
+            {resenas.map((r) => (
+              <div key={r.id} className="resena-card">
+                <p className="resena-autor">{r.nombreComprador}</p>
+                <p className="resena-estrellas">{'⭐'.repeat(r.puntuacion)}</p>
+                {r.comentario && <p className="resena-comentario">{r.comentario}</p>}
+                <p className="resena-fecha">
+                  {r.fecha ? new Date(r.fecha).toLocaleDateString('es-AR') : ''}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 };

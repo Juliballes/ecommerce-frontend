@@ -4,8 +4,7 @@ import { useFavorite } from '../context/FavoriteContext';
 import { useAuth } from '../context/AuthContext';
 import './CardProductos.css';
 
-// CardProductos recibe el objeto product y children (badges de envío)
-// Los children se pasan desde ProductList de forma condicional
+// Card reutilizable — recibe el producto y opcionalmente badges como children
 const CardProductos = ({ product, children }) => {
   const { favoriteItems, addToFavorite, removeFromFavorite } = useFavorite();
   const { token } = useAuth();
@@ -14,7 +13,7 @@ const CardProductos = ({ product, children }) => {
 
   const handleFavoriteClick = async (e) => {
     e.preventDefault();
-    e.stopPropagation();
+    e.stopPropagation(); // el corazón está dentro de un Link, corto la navegación
     if (!token) {
       navigate('/login');
       return;
@@ -39,7 +38,6 @@ const CardProductos = ({ product, children }) => {
           alt={product.nombre}
           className="producto-imagen"
         />
-        {/* Renderizado condicional: solo muestra la categoría si existe */}
         {product.categorias?.[0]?.nombre && (
           <span className="producto-categoria">
             {product.categorias[0].nombre}
@@ -55,17 +53,13 @@ const CardProductos = ({ product, children }) => {
           <p className="producto-vendedor">Vendido por: {product.vendedorNombre}</p>
         )}
 
-        {/* Renderizado condicional: stock disponible o agotado */}
         <div className="producto-stock">
           <span className={product.stock > 0 ? 'en-stock' : 'sin-stock'}>
             {product.stock > 0 ? `Stock: ${product.stock} unidades` : 'Agotado'}
           </span>
         </div>
 
-        {/* children: badges pasados desde el padre (envío gratis, compra internacional) */}
-        <div className="producto-badges">
-          {children}
-        </div>
+        <div className="producto-badges">{children}</div>
 
         <div className="producto-footer">
           <span className="producto-precio">

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 
-// Contexto de autenticación: guarda el token JWT y los datos del usuario logueado, persiste la sesión
+// Contexto de auth: token JWT + datos del usuario, persistidos en localStorage
 const AuthContext = createContext();
 
 const cargarUsuarioGuardado = () => {
@@ -9,18 +9,17 @@ const cargarUsuarioGuardado = () => {
     if (!raw || raw === 'null') return null;
     return JSON.parse(raw);
   } catch {
-    // Si quedó guardado un JWT u otro texto inválido, limpiamos y arrancamos sin usuario
+    // Si quedó basura en localStorage (ej. un JWT), limpio y arranco de cero
     localStorage.removeItem('usuario');
     return null;
   }
 };
 
 export const AuthProvider = ({ children }) => {
-  // Iniciamos leyendo el token del localStorage por si el usuario ya estaba logueado
+  // Leo token y usuario del localStorage por si ya había sesión abierta
   const [token, setToken] = useState(localStorage.getItem('token') || null);
   const [usuario, setUsuario] = useState(cargarUsuarioGuardado);
 
-  // login: guarda el token y los datos del usuario en el estado y en localStorage
   const login = (tokenRecibido, usuarioRecibido) => {
     setToken(tokenRecibido);
     setUsuario(usuarioRecibido);
@@ -28,7 +27,6 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('usuario', JSON.stringify(usuarioRecibido));
   };
 
-  // logout: limpia todo
   const logout = () => {
     setToken(null);
     setUsuario(null);
@@ -36,7 +34,6 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('usuario');
   };
 
-  // isAdmin: verifica si el usuario tiene rol ADMIN
   const isAdmin = usuario?.role === 'ADMIN' || usuario?.roles?.includes('ADMIN');
 
   return (
@@ -46,5 +43,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Hook personalizado
 export const useAuth = () => useContext(AuthContext);

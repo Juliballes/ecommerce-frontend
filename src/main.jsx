@@ -6,12 +6,9 @@ import { BrowserRouter } from 'react-router-dom';
 import { CarritoProvider } from './context/CarritoContext.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { FavoriteProvider } from './context/FavoriteContext.jsx';
-// es donde React monta la app en el DOM.
-// Envolvemos la app con:
-// - BrowserRouter: habilita el sistema de rutas de React Router
-// - AuthProvider: provee el contexto de autenticación (token, usuario)
-// - CarritoProvider: carrito del usuario vía /api/cart (requiere login)
-// - FavoriteProvider: favoritos del usuario vía /api/favorites (requiere login)
+
+// Punto de entrada: envuelvo la app con Router y los contextos globales
+// Auth va afuera porque Carrito y Favoritos dependen del token
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
