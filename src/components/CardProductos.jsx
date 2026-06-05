@@ -4,16 +4,23 @@ import { useFavorite } from '../context/FavoriteContext';
 import { useAuth } from '../context/AuthContext';
 import './CardProductos.css';
 
-// Card reutilizable — recibe el producto y opcionalmente badges como children
+const IconHeart = ({ filled }) => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8">
+    <path d="M12 20.5l-1-.9C5.5 14.8 2 11.6 2 7.8 2 5 4.2 3 6.8 3c1.6 0 3.1.8 4 2.1C11.7 3.8 13.2 3 14.8 3 17.4 3 19.6 5 19.6 7.8c0 3.8-3.5 7-9 11.8l-1 .9z" />
+  </svg>
+);
+
 const CardProductos = ({ product, children }) => {
   const { favoriteItems, addToFavorite, removeFromFavorite } = useFavorite();
   const { token } = useAuth();
   const navigate = useNavigate();
   const isFavorite = favoriteItems.some((item) => item.id === product.id);
+  const sinStock = product.stock === 0;
+  const categoria = product.categorias?.[0]?.nombre;
 
   const handleFavoriteClick = async (e) => {
     e.preventDefault();
-    e.stopPropagation(); // el corazón está dentro de un Link, corto la navegación
+    e.stopPropagation();
     if (!token) {
       navigate('/login');
       return;
@@ -23,7 +30,7 @@ const CardProductos = ({ product, children }) => {
   };
 
   return (
-    <div className="card-producto">
+    <article className="card-producto">
       <div className="producto-imagen-container">
         <button
           type="button"
@@ -31,46 +38,33 @@ const CardProductos = ({ product, children }) => {
           onClick={handleFavoriteClick}
           aria-label={isFavorite ? 'En favoritos' : 'Agregar a favoritos'}
         >
-          {isFavorite ? '❤️' : '🤍'}
+          <IconHeart filled={isFavorite} />
         </button>
+
+        {sinStock && <span className="producto-badge-agotado">Agotado</span>}
+
         <img
           src={product.imagenes?.[0] || product.imagen || ''}
           alt={product.nombre}
           className="producto-imagen"
+          loading="lazy"
         />
-        {product.categorias?.[0]?.nombre && (
-          <span className="producto-categoria">
-            {product.categorias[0].nombre}
-          </span>
-        )}
       </div>
 
       <div className="producto-info">
-        <h3 className="producto-nombre">{product.nombre}</h3>
-        <p className="producto-descripcion">{product.descripcion}</p>
+        {children}
 
-        {product.vendedorNombre && (
-          <p className="producto-vendedor">Vendido por: {product.vendedorNombre}</p>
+        <h3 className="producto-nombre">{product.nombre}</h3>
+
+        {categoria && (
+          <p className="producto-categoria-texto">{categoria}</p>
         )}
 
-        <div className="producto-stock">
-          <span className={product.stock > 0 ? 'en-stock' : 'sin-stock'}>
-            {product.stock > 0 ? `Stock: ${product.stock} unidades` : 'Agotado'}
-          </span>
-        </div>
-
-        <div className="producto-badges">{children}</div>
-
-        <div className="producto-footer">
-          <span className="producto-precio">
-            ${Number(product.precio).toLocaleString('es-AR')}
-          </span>
-          <button className="btn-agregar" disabled={product.stock === 0}>
-            {product.stock > 0 ? 'Ver detalle' : 'Sin stock'}
-          </button>
-        </div>
+        <p className="producto-precio">
+          ${Number(product.precio).toLocaleString('es-AR')}
+        </p>
       </div>
-    </div>
+    </article>
   );
 };
 

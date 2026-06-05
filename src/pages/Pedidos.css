@@ -1,7 +1,7 @@
 .pedidos-container {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 0 1.5rem;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
 }
 
 .pedidos-titulo {
@@ -24,9 +24,10 @@
 
 .pedido-card {
   background: white;
-  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 0;
   padding: 1.25rem;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: none;
 }
 
 .pedido-cabecera {
@@ -175,11 +176,11 @@
 }
 
 .btn-resena-publicar {
-  background: #007bff;
+  background: var(--color-text);
   color: white;
   border: none;
   padding: 0.45rem 0.9rem;
-  border-radius: 6px;
+  border-radius: 999px;
   font-weight: 600;
   cursor: pointer;
   font-size: 0.85rem;
@@ -261,13 +262,14 @@
 }
 
 .btn-pagina {
-  background: #007bff;
+  background: var(--color-text);
   color: white;
   border: none;
   padding: 0.5rem 1rem;
-  border-radius: 6px;
+  border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
+  font-size: 0.85rem;
 }
 
 .btn-pagina:disabled {

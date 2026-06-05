@@ -128,7 +128,7 @@ const ProductDetail = () => {
             disabled={product.stock === 0}
             onClick={handleAgregarAlCarrito}
           >
-            {product.stock > 0 ? 'Agregar al carrito' : 'Sin stock'}
+            {product.stock > 0 ? 'Agregar al carrito' : 'Agotado'}
           </button>
 
           <button
@@ -142,7 +142,7 @@ const ProductDetail = () => {
               else await addToFavorite(product);
             }}
           >
-            {isFavorite ? '❤️ Quitar de favoritos' : '🤍 Agregar a favoritos'}
+            {isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
           </button>
         </div>
       </div>

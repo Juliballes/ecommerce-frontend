@@ -1,224 +1,217 @@
 .detalle-container {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 0 1.5rem;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
 }
 
 .btn-volver {
   background: none;
   border: none;
-  color: #007bff;
-  font-size: 1rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
   cursor: pointer;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   padding: 0;
+  font-weight: 500;
 }
 
-.btn-volver:hover { text-decoration: underline; }
+.btn-volver:hover {
+  color: var(--color-text);
+}
 
 .detalle-card {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2.5rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.1);
-  overflow: hidden;
-  padding: 2rem;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 3rem;
+  align-items: start;
 }
 
-@media (max-width: 640px) {
-  .detalle-card { grid-template-columns: 1fr; }
+@media (max-width: 768px) {
+  .detalle-card {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
 }
 
-.detalle-imagen { width: 100%; border-radius: 8px; object-fit: cover; }
+.detalle-imagen-container {
+  background: var(--color-bg-muted);
+  aspect-ratio: 1 / 1;
+}
+
+.detalle-imagen {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
 .detalle-categoria {
-  background: #e3f2fd;
-  color: #1565c0;
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
 }
 
 .detalle-nombre {
-  font-size: 1.8rem;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
   font-weight: 800;
-  margin: 0.8rem 0;
+  letter-spacing: -0.02em;
+  margin: 0.5rem 0 0.75rem;
+  line-height: 1.15;
 }
 
-.detalle-descripcion { color: #555; line-height: 1.6; margin-bottom: 1rem; }
+.detalle-descripcion {
+  color: var(--color-text-muted);
+  line-height: 1.65;
+  margin-bottom: 1.25rem;
+  font-size: 0.95rem;
+}
 
 .detalle-precio {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #e65100;
-  margin-bottom: 0.8rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 1rem;
 }
 
-.en-stock { color: #2e7d32; font-weight: 600; }
-.sin-stock { color: #c62828; font-weight: 600; }
+.en-stock {
+  color: var(--color-success);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.sin-stock {
+  color: var(--color-error);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
 
 .alerta-agregado {
-  background: #e8f5e9;
-  color: #2e7d32;
-  padding: 0.6rem 1rem;
-  border-radius: 6px;
-  margin: 0.8rem 0;
+  background: #f0faf4;
+  color: var(--color-success);
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
   font-weight: 600;
+  font-size: 0.9rem;
 }
 
 .btn-agregar-detalle {
   width: 100%;
-  padding: 0.9rem;
-  background: #007bff;
-  color: white;
+  padding: 1rem;
+  background: var(--color-text);
+  color: #fff;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
   font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   cursor: pointer;
   margin-top: 1rem;
-  transition: background 0.2s;
+  transition: background var(--transition);
 }
 
-.btn-agregar-detalle:hover:not(:disabled) { background: #0056b3; }
-.btn-agregar-detalle:disabled { background: #bdbdbd; cursor: not-allowed; }
+.btn-agregar-detalle:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
+.btn-agregar-detalle:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
 
 .btn-favorito-detalle {
   width: 100%;
-  padding: 0.9rem;
-  background: white;
-  color: #e53935;
-  border: 2px solid #e53935;
-  border-radius: 8px;
-  font-size: 1rem;
+  padding: 1rem;
+  background: #fff;
+  color: var(--color-text);
+  border: 1px solid var(--color-border-dark);
+  border-radius: 999px;
+  font-size: 0.9rem;
   font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   cursor: pointer;
   margin-top: 0.75rem;
-  transition: all 0.2s;
+  transition: background var(--transition);
 }
 
 .btn-favorito-detalle:hover {
-  background: #fce4ec;
+  background: var(--color-bg-muted);
 }
 
 .detalle-estado {
   text-align: center;
-  padding: 3rem;
-  font-size: 1.1rem;
-  color: #666;
+  padding: 4rem 1rem;
+  color: var(--color-text-muted);
 }
 
-.detalle-error { color: #c62828; }
+.detalle-error {
+  color: var(--color-error);
+}
 
 .detalle-vendedor {
-  color: #666;
-  margin: 0.5rem 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin: 0 0 0.5rem;
 }
 
 .detalle-reputacion {
-  color: #f57c00;
+  color: var(--color-text);
   font-weight: 600;
-  margin: 0.25rem 0 1rem;
+  font-size: 0.9rem;
+  margin: 0 0 1rem;
 }
 
 .resenas-seccion {
-  max-width: 900px;
-  margin: 2rem auto 0;
-  padding: 0 1rem 2rem;
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--color-border);
 }
 
 .resenas-seccion h2 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
 }
 
-.resenas-vacio,
-.resena-ayuda {
-  color: #666;
-  font-size: 0.9rem;
+.resenas-vacio {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
 }
 
 .resenas-lista {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0;
   margin-bottom: 1.5rem;
 }
 
 .resena-card {
-  background: white;
-  border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .resena-autor {
   font-weight: 700;
+  font-size: 0.9rem;
   margin: 0 0 0.25rem;
 }
 
 .resena-estrellas {
   margin: 0 0 0.5rem;
+  font-size: 0.85rem;
 }
 
 .resena-comentario {
   margin: 0 0 0.5rem;
-  color: #444;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 .resena-fecha {
   font-size: 0.8rem;
-  color: #888;
+  color: var(--color-text-light);
   margin: 0;
-}
-
-.resena-form {
-  background: white;
-  border-radius: 10px;
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
-}
-
-.resena-form h3 {
-  margin: 0;
-}
-
-.form-grupo-resena {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.form-grupo-resena label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #444;
-}
-
-.resena-form input,
-.resena-form select,
-.resena-form textarea {
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-}
-
-.resena-error {
-  color: #c62828;
-  margin: 0;
-  font-size: 0.9rem;
-}
-
-.btn-link-resena {
-  background: none;
-  border: none;
-  color: #007bff;
-  cursor: pointer;
-  font-weight: 600;
 }

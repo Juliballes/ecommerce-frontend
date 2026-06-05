@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import ScrollToHash from './components/ScrollToHash';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
@@ -18,6 +19,7 @@ function App() {
   return (
     <div>
       <Navbar />
+      <ScrollToHash />
       <Routes>
         {/* Ruta home: muestra el listado de productos y categorías */}
         <Route path="/" element={<Home />} />
