@@ -6,6 +6,7 @@ import Carrito from './pages/Carrito';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AgregarProducto from './pages/AgregarProducto';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
 import './App.css';
 
 // App define todas las rutas de la aplicación
@@ -22,14 +23,28 @@ function App() {
         <Route path="/products/:id" element={<ProductDetail />} />
 
         {/* Carrito de compras */}
-        <Route path="/carrito" element={<Carrito />} />
+        <Route
+          path="/carrito"
+          element={
+            <ProtectedRoute>
+              <Carrito />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Login y registro */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
         {/* Solo para admin: agregar producto */}
-        <Route path="/admin/agregar-producto" element={<AgregarProducto />} />
+        <Route
+          path="/admin/agregar-producto"
+          element={
+            <ProtectedRoute adminOnly>
+              <AgregarProducto />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </div>
   );
