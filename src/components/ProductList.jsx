@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { API_URL } from '../services/api';
 import CardProductos from './CardProductos';
 import './ProductList.css';
 
@@ -19,13 +20,13 @@ const ProductList = ({ categoriaId = null, soloOfertas = false }) => {
         // Filtro por categoría: el backend lo expone en GET /api/productos/search
         if (categoriaId) {
           const response = await fetch(
-            `http://localhost:8080/api/productos/search?categoriaId=${categoriaId}&page=0&size=100`
+            `${API_URL}/productos/search?categoriaId=${categoriaId}&page=0&size=100`
           );
           if (!response.ok) throw new Error('Error al cargar los productos');
           const data = await response.json();
           items = data.content ?? [];
         } else {
-          const response = await fetch('http://localhost:8080/api/productos');
+          const response = await fetch(`${API_URL}/productos`);
           if (!response.ok) throw new Error('Error al cargar los productos');
           items = await response.json();
         }

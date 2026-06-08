@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useCarrito } from '../context/CarritoContext';
 import { useFavorite } from '../context/FavoriteContext';
 import { useAuth } from '../context/AuthContext';
-import { apiFetch } from '../services/api';
+import { apiFetch, API_URL } from '../services/api';
 import './ProductDetail.css';
 
 // Detalle de producto — :id viene de la ruta /products/:id (useParams)
@@ -27,7 +27,7 @@ const ProductDetail = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`http://localhost:8080/api/productos/${id}`);
+        const response = await fetch(`${API_URL}/productos/${id}`);
         if (!response.ok) throw new Error('Producto no encontrado');
         const data = await response.json();
         setProduct(data);

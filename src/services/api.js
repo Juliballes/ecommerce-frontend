@@ -1,5 +1,5 @@
-// Base URL del backend Spring Boot
-export const API_URL = 'http://localhost:8080/api';
+const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
+export const API_URL = `${API_BASE}/api`;
 
 // Helper fetch: agrega JSON headers y Bearer token cuando hay sesión
 export async function apiFetch(path, { token, method = 'GET', body } = {}) {

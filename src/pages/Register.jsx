@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { API_URL } from '../services/api';
 import './FormAuth.css';
 
 // Registro de usuario nuevo — POST /api/auth/register
@@ -25,7 +26,7 @@ const Register = () => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:8080/api/auth/register', {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),

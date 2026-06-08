@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { API_URL } from '../services/api';
 import './ProductListCategoria.css';
 
 const ProductListCategoria = ({
@@ -16,7 +17,7 @@ const ProductListCategoria = ({
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/categorias');
+        const response = await fetch(`${API_URL}/categorias`);
         if (!response.ok) throw new Error('Error al cargar categorías');
         const data = await response.json();
         setCategorias(data);

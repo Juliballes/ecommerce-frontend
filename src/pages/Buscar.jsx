@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { API_URL } from '../services/api';
 import CardProductos from '../components/CardProductos';
 import './Buscar.css';
 
@@ -29,7 +30,7 @@ const Buscar = () => {
       setError(null);
       try {
         const response = await fetch(
-          `http://localhost:8080/api/productos/search?q=${encodeURIComponent(q)}&page=0&size=20`
+          `${API_URL}/productos/search?q=${encodeURIComponent(q)}&page=0&size=20`
         );
         if (!response.ok) throw new Error('Error al buscar productos');
         const data = await response.json();

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../services/api';
 import './AgregarProducto.css';
 
 // Formulario admin para publicar productos (POST /api/productos)
@@ -23,7 +24,7 @@ const AgregarProducto = () => {
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/categorias');
+        const response = await fetch(`${API_URL}/categorias`);
         if (!response.ok) throw new Error('Error al cargar categorías');
         const data = await response.json();
         setCategorias(data);
@@ -60,7 +61,7 @@ const AgregarProducto = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:8080/api/productos', {
+      const response = await fetch(`${API_URL}/productos`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
