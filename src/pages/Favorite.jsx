@@ -1,6 +1,6 @@
-import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useFavorite } from '../context/FavoriteContext';
+import { getProductImageSrc } from '../utils/productImages';
 import './Favorite.css';
 
 // Página de favoritos — la lista vive en FavoriteContext (GET /api/favorites)
@@ -27,6 +27,12 @@ const Favorite = () => {
       <div className="favoritos-lista">
         {favoriteItems.map((product) => (
           <div key={product.favoritoId ?? product.id} className="favorito-item">
+            <img
+              src={getProductImageSrc(product)}
+              alt={product.nombre}
+              className="favorito-imagen"
+            />
+
             <div className="favorito-info">
               <p className="favorito-nombre">{product.nombre}</p>
               <p className="favorito-precio">

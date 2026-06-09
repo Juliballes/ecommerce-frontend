@@ -18,7 +18,7 @@ const ProductListCategoria = ({
     const fetchCategorias = async () => {
       try {
         const response = await fetch(`${API_URL}/categorias`);
-        if (!response.ok) throw new Error('Error al cargar categorías');
+        if (!response.ok) throw new Error('Error al cargar categorias');
         const data = await response.json();
         setCategorias(data);
       } catch (err) {
@@ -62,7 +62,7 @@ const ProductListCategoria = ({
             className="filtro-grupo-titulo"
             onClick={() => setFiltrosAbiertos(!filtrosAbiertos)}
           >
-            Categoría
+            Categoria
             <span className={`filtro-flecha ${filtrosAbiertos ? 'abierto' : ''}`}>›</span>
           </button>
 

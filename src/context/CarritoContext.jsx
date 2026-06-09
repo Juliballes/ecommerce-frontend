@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { apiFetch } from '../services/api';
+import { mergeProductImages } from '../utils/productImages';
 
 const CarritoContext = createContext();
 
@@ -13,7 +14,21 @@ const mapLineas = (lineas) =>
     precio: linea.precioActual,
     cantidad: linea.cantidad,
     stock: linea.stockDisponible,
+    imagenes: linea.imagenes,
+    imagen: linea.imagen,
   }));
+
+const hydrateCartImages = async (items) =>
+  Promise.all(
+    items.map(async (item) => {
+      try {
+        const productDetail = await apiFetch(`/productos/${item.id}`);
+        return mergeProductImages(item, productDetail);
+      } catch {
+        return item;
+      }
+    })
+  );
 
 export const CarritoProvider = ({ children }) => {
   const { token } = useAuth();
@@ -29,7 +44,8 @@ export const CarritoProvider = ({ children }) => {
     const cargarCarrito = async () => {
       try {
         const data = await apiFetch('/cart', { token }); // GET /api/cart
-        setItems(mapLineas(data));
+        const lineas = mapLineas(data);
+        setItems(await hydrateCartImages(lineas));
       } catch {
         setItems([]);
       }
@@ -47,7 +63,8 @@ export const CarritoProvider = ({ children }) => {
         method: 'POST',
         body: { productId: producto.id, quantity: 1 },
       });
-      setItems(mapLineas(data));
+      const lineas = mapLineas(data);
+      setItems(await hydrateCartImages(lineas));
       return true;
     } catch {
       return false;
@@ -59,7 +76,8 @@ export const CarritoProvider = ({ children }) => {
 
     try {
       const data = await apiFetch(`/cart/${lineaId}`, { token, method: 'DELETE' });
-      setItems(mapLineas(data));
+      const lineas = mapLineas(data);
+      setItems(await hydrateCartImages(lineas));
     } catch {
       // sin cambios si falla
     }
@@ -73,7 +91,8 @@ export const CarritoProvider = ({ children }) => {
 
     try {
       const data = await apiFetch('/cart', { token, method: 'DELETE' });
-      setItems(mapLineas(data));
+      const lineas = mapLineas(data);
+      setItems(await hydrateCartImages(lineas));
     } catch {
       setItems([]);
     }

@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCarrito } from '../context/CarritoContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { apiFetch } from '../services/api';
+import { getProductImageSrc } from '../utils/productImages';
 import './Carrito.css';
 
 const direccionVacia = {
@@ -173,6 +174,12 @@ const Carrito = () => {
       <div className="carrito-lista">
         {items.map((item) => (
           <div key={item.lineaId} className="carrito-item">
+            <img
+              src={getProductImageSrc(item)}
+              alt={item.nombre}
+              className="item-imagen"
+            />
+
             <div className="item-info">
               <p className="item-nombre">{item.nombre}</p>
               <p className="item-precio">

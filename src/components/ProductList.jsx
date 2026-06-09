@@ -20,7 +20,7 @@ const ProductList = ({ categoriaId = null, soloOfertas = false }) => {
         // Filtro por categoría: el backend lo expone en GET /api/productos/search
         if (categoriaId) {
           const response = await fetch(
-            `${API_URL}/productos/search?categoriaId=${categoriaId}&page=0&size=100`
+            `${API_URL}/productos/search?categoriaId=${categoriaId}&page=0&size=4`
           );
           if (!response.ok) throw new Error('Error al cargar los productos');
           const data = await response.json();

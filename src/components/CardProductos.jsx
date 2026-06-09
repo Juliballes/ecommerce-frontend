@@ -1,7 +1,7 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFavorite } from '../context/FavoriteContext';
 import { useAuth } from '../context/AuthContext';
+import { getProductImageSrc } from '../utils/productImages';
 import './CardProductos.css';
 
 const IconHeart = ({ filled }) => (
@@ -44,7 +44,7 @@ const CardProductos = ({ product, children }) => {
         {sinStock && <span className="producto-badge-agotado">Agotado</span>}
 
         <img
-          src={product.imagenes?.[0] || product.imagen || ''}
+          src={getProductImageSrc(product)}
           alt={product.nombre}
           className="producto-imagen"
           loading="lazy"

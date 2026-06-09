@@ -1,6 +1,7 @@
-import React, { useState, useContext, createContext, useEffect } from 'react';
+import { useState, useContext, createContext, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { apiFetch } from '../services/api';
+import { mergeProductImages } from '../utils/productImages';
 
 const FavoriteContext = createContext();
 
@@ -18,7 +19,21 @@ const mapFavorito = (fav) => ({
   id: fav.productId,
   nombre: fav.nombreProducto,
   precio: fav.precio,
+  imagenes: fav.imagenes,
+  imagen: fav.imagen,
 });
+
+const hydrateFavoriteImages = async (items) =>
+  Promise.all(
+    items.map(async (item) => {
+      try {
+        const productDetail = await apiFetch(`/productos/${item.id}`);
+        return mergeProductImages(item, productDetail);
+      } catch {
+        return item;
+      }
+    })
+  );
 
 export function FavoriteProvider({ children }) {
   const { token } = useAuth();
@@ -34,7 +49,8 @@ export function FavoriteProvider({ children }) {
     const cargarFavoritos = async () => {
       try {
         const data = await apiFetch('/favorites', { token });
-        setFavoriteItems(data.map(mapFavorito));
+        const items = data.map(mapFavorito);
+        setFavoriteItems(await hydrateFavoriteImages(items));
       } catch {
         setFavoriteItems([]);
       }
@@ -53,7 +69,8 @@ export function FavoriteProvider({ children }) {
         body: { productId: product.id },
       });
       const data = await apiFetch('/favorites', { token });
-      setFavoriteItems(data.map(mapFavorito));
+      const items = data.map(mapFavorito);
+      setFavoriteItems(await hydrateFavoriteImages(items));
       return true;
     } catch {
       return false;

@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCarrito } from '../context/CarritoContext';
 import { useFavorite } from '../context/FavoriteContext';
 import { useAuth } from '../context/AuthContext';
 import { apiFetch, API_URL } from '../services/api';
+import { getProductImageSrc } from '../utils/productImages';
 import './ProductDetail.css';
 
 // Detalle de producto — :id viene de la ruta /products/:id (useParams)
@@ -82,7 +83,7 @@ const ProductDetail = () => {
       <div className="detalle-card">
         <div className="detalle-imagen-container">
           <img
-            src={product.imagenes?.[0] || product.imagen || ''}
+            src={getProductImageSrc(product)}
             alt={product.nombre}
             className="detalle-imagen"
           />
