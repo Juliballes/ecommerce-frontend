@@ -1,46 +1,107 @@
-import React, { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
+import { apiFetch } from '../services/api';
+import { mergeProductImages } from '../utils/productImages';
 
-// Creamos el contexto del carrito
-// createContext crea un "canal" global para compartir datos entre componentes
 const CarritoContext = createContext();
 
-// CarritoProvider es el componente que "envuelve" la app y provee el estado del carrito
+// Adapto la respuesta del backend al formato que usa la UI del carrito
+const mapLineas = (lineas) =>
+  lineas.map((linea) => ({
+    lineaId: linea.id,
+    id: linea.productId,
+    nombre: linea.nombreProducto,
+    precio: linea.precioActual,
+    cantidad: linea.cantidad,
+    stock: linea.stockDisponible,
+    imagenes: linea.imagenes,
+    imagen: linea.imagen,
+  }));
+
+const hydrateCartImages = async (items) =>
+  Promise.all(
+    items.map(async (item) => {
+      try {
+        const productDetail = await apiFetch(`/productos/${item.id}`);
+        return mergeProductImages(item, productDetail);
+      } catch {
+        return item;
+      }
+    })
+  );
+
 export const CarritoProvider = ({ children }) => {
-  // items: array de productos en el carrito, cada uno con cantidad
+  const { token } = useAuth();
   const [items, setItems] = useState([]);
 
-  // Agregar producto al carrito
-  // Si ya existe, incrementa la cantidad; si no, lo agrega con cantidad 1
-  const agregarAlCarrito = (producto) => {
-    setItems((prev) => {
-      const existe = prev.find((item) => item.id === producto.id);
-      if (existe) {
-        return prev.map((item) =>
-          item.id === producto.id
-            ? { ...item, cantidad: item.cantidad + 1 }
-            : item
-        );
+  // Recargo el carrito cada vez que cambia el token (login/logout)
+  useEffect(() => {
+    if (!token) {
+      setItems([]);
+      return;
+    }
+
+    const cargarCarrito = async () => {
+      try {
+        const data = await apiFetch('/cart', { token }); // GET /api/cart
+        const lineas = mapLineas(data);
+        setItems(await hydrateCartImages(lineas));
+      } catch {
+        setItems([]);
       }
-      return [...prev, { ...producto, cantidad: 1 }];
-    });
+    };
+
+    cargarCarrito();
+  }, [token]);
+
+  const agregarAlCarrito = async (producto) => {
+    if (!token) return false; // sin sesión no puedo tocar el carrito del backend
+
+    try {
+      const data = await apiFetch('/cart', {
+        token,
+        method: 'POST',
+        body: { productId: producto.id, quantity: 1 },
+      });
+      const lineas = mapLineas(data);
+      setItems(await hydrateCartImages(lineas));
+      return true;
+    } catch {
+      return false;
+    }
   };
 
-  // Eliminar un item del carrito por id
-  const eliminarDelCarrito = (id) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+  const eliminarDelCarrito = async (lineaId) => {
+    if (!token) return;
+
+    try {
+      const data = await apiFetch(`/cart/${lineaId}`, { token, method: 'DELETE' });
+      const lineas = mapLineas(data);
+      setItems(await hydrateCartImages(lineas));
+    } catch {
+      // sin cambios si falla
+    }
   };
 
-  // Vaciar todo el carrito
-  const vaciarCarrito = () => {
-    setItems([]);
+  const vaciarCarrito = async () => {
+    if (!token) {
+      setItems([]);
+      return;
+    }
+
+    try {
+      const data = await apiFetch('/cart', { token, method: 'DELETE' });
+      const lineas = mapLineas(data);
+      setItems(await hydrateCartImages(lineas));
+    } catch {
+      setItems([]);
+    }
   };
 
-  // Calcular el total sumando precio * cantidad de cada item
-  const calcularTotal = () => {
-    return items.reduce((total, item) => total + item.precio * item.cantidad, 0);
-  };
+  const calcularTotal = () =>
+    items.reduce((total, item) => total + item.precio * item.cantidad, 0);
 
-  // Cantidad total de items (para el badge del ícono del carrito)
+  // Suma de cantidades — lo uso para el badge del Navbar
   const cantidadTotal = items.reduce((acc, item) => acc + item.cantidad, 0);
 
   return (
@@ -59,5 +120,4 @@ export const CarritoProvider = ({ children }) => {
   );
 };
 
-// Hook personalizado para usar el carrito fácilmente en cualquier componente
 export const useCarrito = () => useContext(CarritoContext);

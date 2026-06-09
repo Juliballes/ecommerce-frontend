@@ -1,0 +1,158 @@
+.perfil-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+.perfil-titulo {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.25rem;
+}
+
+.perfil-subtitulo {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.perfil-seccion {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: none;
+}
+
+.perfil-seccion h2 {
+  margin: 0 0 1rem;
+  font-size: 1.15rem;
+}
+
+.perfil-seccion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.perfil-seccion-header h2 {
+  margin: 0;
+}
+
+.perfil-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.perfil-form .form-fila {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.perfil-form .form-grupo {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.perfil-form label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.perfil-form input,
+.perfil-form select {
+  padding: 0.55rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.btn-perfil-guardar {
+  align-self: flex-start;
+  background: var(--color-text);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 0.25rem;
+}
+
+.btn-perfil-guardar:disabled {
+  background: #bdbdbd;
+  cursor: not-allowed;
+}
+
+.perfil-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.perfil-lista-item {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.35rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.perfil-lista-item:last-child {
+  border-bottom: none;
+}
+
+.perfil-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.perfil-link:hover {
+  text-decoration: underline;
+}
+
+.perfil-fecha {
+  color: #888;
+  font-size: 0.85rem;
+  width: 100%;
+}
+
+.perfil-vacio,
+.perfil-estado {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.perfil-error,
+.perfil-error-inline {
+  color: #c62828;
+  font-size: 0.9rem;
+}
+
+.perfil-error-inline {
+  margin-bottom: 0.75rem;
+}
+
+.perfil-exito {
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 0.6rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}

@@ -1,67 +1,170 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom'; //useNavigate — hook para redirigir por código, no por click del usuario
-import { useCarrito } from '../context/CarritoContext'; //Importa el hook personalizado del carrito. Le da acceso al estado global del carrito (cuántos items hay).
-import { useAuth } from '../context/AuthContext'; // Importa el hook de autenticación. Le da acceso al usuario logueado, la función logout, y si es admin.
+import React, { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useCarrito } from '../context/CarritoContext';
+import { useFavorite } from '../context/FavoriteContext';
+import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
-// Navbar: barra de navegación principal
-// Usa Link de react-router-dom (no <a>) para navegar sin recargar la página (SPA)
+const IconSearch = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+    <circle cx="11" cy="11" r="7" />
+    <path d="M20 20l-3.5-3.5" />
+  </svg>
+);
+
+const IconUser = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+  </svg>
+);
+
+const IconHeart = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+    <path d="M12 20.5l-1-.9C5.5 14.8 2 11.6 2 7.8 2 5 4.2 3 6.8 3c1.6 0 3.1.8 4 2.1C11.7 3.8 13.2 3 14.8 3 17.4 3 19.6 5 19.6 7.8c0 3.8-3.5 7-9 11.8l-1 .9z" />
+  </svg>
+);
+
+const IconBag = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+    <path d="M6 7h12l-1.2 13H7.2L6 7z" />
+    <path d="M9 7V5a3 3 0 016 0v2" />
+  </svg>
+);
+
 const Navbar = () => {
-  const { cantidadTotal } = useCarrito(); //Lee del CarritoContext cuántos items hay en el carrito en total. Este número se usa para el badge rojo del ícono.
-  const { usuario, logout, isAdmin } = useAuth(); //Lee tres cosas del AuthContext:
-                                                  //usuario — objeto con los datos del usuario logueado (o null si no hay nadie)
-                                                  //logout — función que limpia el token y el usuario del estado y del localStorage
-                                                  //isAdmin — booleano: true si el usuario tiene rol ADMIN
+  const { cantidadTotal } = useCarrito();
+  const { favoriteItems } = useFavorite();
+  const { usuario, logout, isAdmin } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [busqueda, setBusqueda] = useState('');
+  const [menuAbierto, setMenuAbierto] = useState(false);
+  const [menuUsuario, setMenuUsuario] = useState(false);
 
-  const navigate = useNavigate(); //Guarda el hook de navegación en una variable para poder usarlo dentro de funciones.
-
-  const handleLogout = () => { //Función que se ejecuta cuando el usuario clickea "Salir".
-                              //logout(); Llama a la función del contexto que limpia el token del localStorage y pone usuario en null.
-    logout();
-    navigate('/login'); //Después de limpiar la sesión, redirige al usuario a la página de login. Esto es navegación programática: no es un <Link>, sino código que decide a dónde ir.
+  const handleBuscar = (e) => {
+    e.preventDefault();
+    const q = busqueda.trim();
+    navigate(q ? `/buscar?q=${encodeURIComponent(q)}` : '/buscar');
   };
 
-  return (//El logo que lleva al home. Usa Link y no <a href="/"> porque con <a> el navegador recargaría toda la app (perdería el carrito, el estado, todo).
-    <nav className="navbar">
-      <div className="navbar-brand">
-        {/* Link evita la recarga completa de página, a diferencia de <a href> */}
-        <Link to="/" className="navbar-logo">🛒 E-Commerce</Link>
+  const handleLogout = () => {
+    logout();
+    setMenuUsuario(false);
+    navigate('/login');
+  };
+
+  const irAProductos = () => {
+    setMenuAbierto(false);
+    if (location.pathname !== '/') {
+      navigate('/#productos');
+    } else {
+      document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <header className="site-header">
+      <div className="topbar">
+        <p>Envío gratis en compras seleccionadas · Hasta 6 cuotas sin interés</p>
       </div>
 
-      <div className="navbar-links"> 
-        <Link to="/" className="nav-link">Inicio</Link>
-        
-        {/* Solo mostramos "Agregar Producto" si el usuario es ADMIN */}
-        {isAdmin && ( //Renderizado condicional con &&. Si isAdmin es false, el link de "+ Producto" directamente no existe en el DOM. Solo los admins lo ven.
-          <Link to="/admin/agregar-producto" className="nav-link nav-link-admin"> 
-            + Producto
-          </Link> //Ruta protegida de admin. Solo se renderiza si pasó el && de arriba.
-        )}
+      <nav className="navbar">
+        <div className="navbar-inner">
+          <Link to="/" className="navbar-logo">
+            STORE
+          </Link>
 
-        {/* Mostramos carrito con badge de cantidad */}
-        <Link to="/carrito" className="nav-link nav-carrito"> {/* Link al carrito. */}
-          🛒 Carrito
-          {cantidadTotal > 0 && ( //Otro &&. El badge con el número solo aparece si hay al menos un item en el carrito. Si está vacío, no se renderiza nada.
-            <span className="carrito-badge">{cantidadTotal}</span> //El numerito rojo que muestra cuántos productos hay. Viene directamente del CarritoContext, se actualiza solo cada vez que alguien agrega o elimina algo.
-          )}
-        </Link>
-
-        {/* Si el usuario está logueado mostramos su nombre y botón de logout */}
-        {usuario ? ( //{usuario ? (Ternario. Pregunta: ¿hay un usuario logueado? Si usuario no es null, muestra el saludo y el botón salir. Si es null, muestra los links de login y registro.
-          <div className="nav-usuario">
-            <span className="nav-nombre">Hola, {usuario.nombre || usuario.username}</span>
-            <button onClick={handleLogout} className="btn-logout">Salir</button>
+          <div className={`navbar-center ${menuAbierto ? 'abierto' : ''}`}>
+            <Link to="/" className="nav-link" onClick={() => setMenuAbierto(false)}>
+              Inicio
+            </Link>
+            <button type="button" className="nav-link nav-link-btn" onClick={irAProductos}>
+              Productos
+            </button>
+            {isAdmin && (
+              <Link to="/admin/agregar-producto" className="nav-link" onClick={() => setMenuAbierto(false)}>
+                + Producto
+              </Link>
+            )}
           </div>
-        ) : (
-          //Los dos links que ve alguien que no está logueado.
-          <> 
-            <Link to="/login" className="nav-link">Iniciar sesión</Link>
-            <Link to="/register" className="nav-link nav-link-register">Registrarse</Link>
-          </>
-        )}
-      </div>
-    </nav>
+
+          <form className="navbar-search" onSubmit={handleBuscar}>
+            <IconSearch />
+            <input
+              type="text"
+              placeholder="Buscar"
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+            />
+          </form>
+
+          <div className="navbar-actions">
+            <div className="nav-action-wrap">
+              <button
+                type="button"
+                className="nav-icon-btn"
+                aria-label="Mi cuenta"
+                onClick={() => {
+                  if (!usuario) navigate('/login');
+                  else setMenuUsuario(!menuUsuario);
+                }}
+              >
+                <IconUser />
+              </button>
+              {menuUsuario && usuario && (
+                <div className="nav-dropdown">
+                  <p className="nav-dropdown-nombre">
+                    Hola, {usuario.nombre || usuario.username || usuario.email}
+                  </p>
+                  <Link to="/perfil" onClick={() => setMenuUsuario(false)}>Mi perfil</Link>
+                  <Link to="/mis-compras" onClick={() => setMenuUsuario(false)}>Mis compras</Link>
+                  <Link to="/mis-ventas" onClick={() => setMenuUsuario(false)}>Mis ventas</Link>
+                  <button type="button" onClick={handleLogout}>Cerrar sesión</button>
+                </div>
+              )}
+            </div>
+
+            <Link to="/favoritos" className="nav-icon-btn" aria-label="Favoritos">
+              <IconHeart />
+              {favoriteItems.length > 0 && (
+                <span className="nav-badge">{favoriteItems.length}</span>
+              )}
+            </Link>
+
+            <Link to="/carrito" className="nav-icon-btn" aria-label="Carrito">
+              <IconBag />
+              {cantidadTotal > 0 && (
+                <span className="nav-badge">{cantidadTotal}</span>
+              )}
+            </Link>
+
+            {!usuario && (
+              <Link to="/login" className="nav-login-btn">Ingresar</Link>
+            )}
+          </div>
+
+          <button
+            type="button"
+            className="navbar-hamburger"
+            aria-label="Menú"
+            onClick={() => setMenuAbierto(!menuAbierto)}
+          >
+            <span />
+            <span />
+          </button>
+        </div>
+      </nav>
+
+      {!usuario && (
+        <div className="navbar-promo">
+          <Link to="/register">
+            Registrate o iniciá sesión para desbloquear tu experiencia personalizada →
+          </Link>
+        </div>
+      )}
+    </header>
   );
 };
 
-export default Navbar; //Exporta el componente para que App.jsx pueda importarlo y usarlo fuera de las <Routes> (la Navbar aparece en todas las páginas).
+export default Navbar;

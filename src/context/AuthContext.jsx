@@ -1,16 +1,25 @@
 import React, { createContext, useContext, useState } from 'react';
 
-// Contexto de autenticación: guarda el token JWT y los datos del usuario logueado, persiste la sesión
+// Contexto de auth: token JWT + datos del usuario, persistidos en localStorage
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
-  // Iniciamos leyendo el token del localStorage por si el usuario ya estaba logueado
-  const [token, setToken] = useState(localStorage.getItem('token') || null);
-  const [usuario, setUsuario] = useState(
-    JSON.parse(localStorage.getItem('usuario') || 'null')
-  );
+const cargarUsuarioGuardado = () => {
+  try {
+    const raw = localStorage.getItem('usuario');
+    if (!raw || raw === 'null') return null;
+    return JSON.parse(raw);
+  } catch {
+    // Si quedó basura en localStorage (ej. un JWT), limpio y arranco de cero
+    localStorage.removeItem('usuario');
+    return null;
+  }
+};
 
-  // login: guarda el token y los datos del usuario en el estado y en localStorage
+export const AuthProvider = ({ children }) => {
+  // Leo token y usuario del localStorage por si ya había sesión abierta
+  const [token, setToken] = useState(localStorage.getItem('token') || null);
+  const [usuario, setUsuario] = useState(cargarUsuarioGuardado);
+
   const login = (tokenRecibido, usuarioRecibido) => {
     setToken(tokenRecibido);
     setUsuario(usuarioRecibido);
@@ -18,7 +27,11 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('usuario', JSON.stringify(usuarioRecibido));
   };
 
-  // logout: limpia todo
+  const updateUsuario = (usuarioActualizado) => {
+    setUsuario(usuarioActualizado);
+    localStorage.setItem('usuario', JSON.stringify(usuarioActualizado));
+  };
+
   const logout = () => {
     setToken(null);
     setUsuario(null);
@@ -26,15 +39,13 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('usuario');
   };
 
-  // isAdmin: verifica si el usuario tiene rol ADMIN
   const isAdmin = usuario?.role === 'ADMIN' || usuario?.roles?.includes('ADMIN');
 
   return (
-    <AuthContext.Provider value={{ token, usuario, login, logout, isAdmin }}>
+    <AuthContext.Provider value={{ token, usuario, login, logout, updateUsuario, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Hook personalizado
 export const useAuth = () => useContext(AuthContext);

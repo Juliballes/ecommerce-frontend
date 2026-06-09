@@ -1,98 +1,282 @@
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 2rem;
-  height: 60px;
-  background: #1a1a2e;
-  color: white;
+.site-header {
   position: sticky;
   top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  z-index: 200;
+  background: var(--color-bg);
 }
 
-.navbar-logo {
-  color: white;
-  font-size: 1.3rem;
-  font-weight: 800;
-  text-decoration: none;
-}
-
-.navbar-links {
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-}
-
-.nav-link {
-  color: #ccc;
-  text-decoration: none;
-  font-size: 0.95rem;
-  transition: color 0.2s;
-}
-
-.nav-link:hover {
-  color: white;
-}
-
-.nav-link-admin {
-  color: #ffd700;
-  font-weight: 600;
-}
-
-.nav-link-register {
-  background: #007bff;
-  color: white !important;
-  padding: 0.4rem 0.9rem;
-  border-radius: 5px;
-}
-
-.nav-carrito {
-  position: relative;
-  color: white !important;
-  font-weight: 600;
-}
-
-.carrito-badge {
-  position: absolute;
-  top: -8px;
-  right: -10px;
-  background: #e53935;
-  color: white;
-  border-radius: 50%;
-  width: 18px;
-  height: 18px;
+.topbar {
+  height: var(--topbar-height);
+  background: var(--color-bg-hero);
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.7rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 0 1rem;
+  text-align: center;
 }
 
-.nav-usuario {
+.navbar {
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.navbar-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  height: var(--header-height);
+  padding: 0 1.5rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.navbar-logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+.navbar-center {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  justify-content: center;
+  gap: 1.75rem;
 }
 
-.nav-nombre {
-  color: #aaa;
-  font-size: 0.9rem;
+.nav-link {
+  text-decoration: none;
+  color: var(--color-text);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: opacity var(--transition);
 }
 
-.btn-logout {
-  background: transparent;
-  border: 1px solid #555;
-  color: #ccc;
-  padding: 0.3rem 0.7rem;
-  border-radius: 5px;
+.nav-link:hover {
+  opacity: 0.6;
+}
+
+.nav-link-btn {
+  background: none;
+  border: none;
   cursor: pointer;
-  font-size: 0.85rem;
-  transition: all 0.2s;
+  font-family: inherit;
+  padding: 0;
 }
 
-.btn-logout:hover {
-  background: #333;
-  color: white;
+.navbar-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-bg-muted);
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  min-width: 180px;
+  max-width: 220px;
+}
+
+.navbar-search svg {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.navbar-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 0.875rem;
+  color: var(--color-text);
+}
+
+.navbar-search input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.nav-action-wrap {
+  position: relative;
+}
+
+.nav-icon-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  text-decoration: none;
+  border-radius: 50%;
+  transition: background var(--transition);
+}
+
+.nav-icon-btn:hover {
+  background: var(--color-bg-muted);
+}
+
+.nav-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background: var(--color-text);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-login-btn {
+  margin-left: 0.5rem;
+  padding: 0.45rem 1rem;
+  background: var(--color-text);
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.nav-login-btn:hover {
+  background: var(--color-accent-hover);
+}
+
+.nav-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 0.5rem 0;
+  z-index: 300;
+}
+
+.nav-dropdown-nombre {
+  padding: 0.6rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 0.25rem;
+}
+
+.nav-dropdown a,
+.nav-dropdown button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.6rem 1rem;
+  font-size: 0.875rem;
+  color: var(--color-text);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.nav-dropdown a:hover,
+.nav-dropdown button:hover {
+  background: var(--color-bg-muted);
+}
+
+.navbar-promo {
+  background: var(--color-bg-muted);
+  border-bottom: 1px solid var(--color-border);
+  text-align: center;
+  padding: 0.65rem 1rem;
+  font-size: 0.85rem;
+}
+
+.navbar-promo a {
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.navbar-promo a:hover {
+  text-decoration: underline;
+}
+
+.navbar-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.navbar-hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--color-text);
+}
+
+@media (max-width: 1024px) {
+  .navbar-inner {
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .navbar-search {
+    display: none;
+  }
+
+  .navbar-hamburger {
+    display: flex;
+  }
+
+  .navbar-center {
+    display: none;
+    position: absolute;
+    top: calc(var(--topbar-height) + var(--header-height));
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: #fff;
+    border-bottom: 1px solid var(--color-border);
+    padding: 1rem 1.5rem 1.5rem;
+    gap: 1rem;
+  }
+
+  .navbar-center.abierto {
+    display: flex;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-login-btn {
+    display: none;
+  }
+
+  .topbar p {
+    font-size: 0.68rem;
+  }
 }
