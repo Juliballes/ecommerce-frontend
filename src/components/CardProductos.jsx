@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useFavorite } from '../context/FavoriteContext';
+import { useCarrito } from '../context/CarritoContext';
 import { useAuth } from '../context/AuthContext';
 import { getProductImageSrc } from '../utils/productImages';
 import './CardProductos.css';
@@ -12,6 +13,7 @@ const IconHeart = ({ filled }) => (
 
 const CardProductos = ({ product, children }) => {
   const { favoriteItems, addToFavorite, removeFromFavorite } = useFavorite();
+  const { agregarAlCarrito } = useCarrito();
   const { token } = useAuth();
   const navigate = useNavigate();
   const isFavorite = favoriteItems.some((item) => item.id === product.id);
@@ -27,6 +29,17 @@ const CardProductos = ({ product, children }) => {
     }
     if (isFavorite) await removeFromFavorite(product.id);
     else await addToFavorite(product);
+  };
+
+  const handleAddToCart = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    if (sinStock) return;
+    await agregarAlCarrito(product);
   };
 
   return (
@@ -60,9 +73,19 @@ const CardProductos = ({ product, children }) => {
           <p className="producto-categoria-texto">{categoria}</p>
         )}
 
-        <p className="producto-precio">
-          ${Number(product.precio).toLocaleString('es-AR')}
-        </p>
+        <div className="producto-footer">
+          <p className="producto-precio">
+            ${Number(product.precio).toLocaleString('es-AR')}
+          </p>
+          <button
+            type="button"
+            className="btn-carrito"
+            onClick={handleAddToCart}
+            disabled={sinStock}
+          >
+            {sinStock ? 'Sin stock' : 'Agregar al carrito'}
+          </button>
+        </div>
       </div>
     </article>
   );
