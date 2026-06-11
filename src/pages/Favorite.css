@@ -37,6 +37,17 @@
   flex: 1;
 }
 
+.favorito-imagen-link,
+.favorito-detalle-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.favorito-detalle-link:hover .favorito-nombre {
+  text-decoration: underline;
+}
+
 .favorito-nombre {
   font-weight: 700;
   margin: 0 0 0.3rem;
