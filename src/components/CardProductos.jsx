@@ -1,7 +1,6 @@
-import { useNavigate } from 'react-router-dom';
-import { useFavorite } from '../context/FavoriteContext';
-import { useCarrito } from '../context/CarritoContext';
-import { useAuth } from '../context/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { addFavorite, removeFromFavorite } from '../store/slices/favoriteSlice';
+import { addToCart } from '../store/slices/cartSlice';
 import { getProductImageSrc } from '../utils/productImages';
 import './CardProductos.css';
 
@@ -12,10 +11,8 @@ const IconHeart = ({ filled }) => (
 );
 
 const CardProductos = ({ product, children }) => {
-  const { favoriteItems, addToFavorite, removeFromFavorite } = useFavorite();
-  const { agregarAlCarrito } = useCarrito();
-  const { token } = useAuth();
-  const navigate = useNavigate();
+  const favoriteItems = useSelector((state) => state.favorites.items);
+  const dispatch = useDispatch();
   const isFavorite = favoriteItems.some((item) => item.id === product.id);
   const sinStock = product.stock === 0;
   const categoria = product.categorias?.[0]?.nombre;
@@ -23,23 +20,15 @@ const CardProductos = ({ product, children }) => {
   const handleFavoriteClick = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-    if (isFavorite) await removeFromFavorite(product.id);
-    else await addToFavorite(product);
+    if (isFavorite) dispatch(removeFromFavorite(product.id));
+    else dispatch(addFavorite(product));
   };
 
   const handleAddToCart = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!token) {
-      navigate('/login');
-      return;
-    }
     if (sinStock) return;
-    await agregarAlCarrito(product);
+    dispatch(addToCart(product));
   };
 
   return (

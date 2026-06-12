@@ -1,11 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useFavorite } from '../context/FavoriteContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { removeFromFavorite } from '../store/slices/favoriteSlice';
 import { getProductImageSrc } from '../utils/productImages';
 import './Favorite.css';
 
-// Página de favoritos — la lista vive en FavoriteContext (GET /api/favorites)
+// Página de favoritos conectada al estado global de Redux
 const Favorite = () => {
-  const { favoriteItems, removeFromFavorite } = useFavorite();
+  const favoriteItems = useSelector((state) => state.favorites.items);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   if (favoriteItems.length === 0) {
@@ -51,7 +53,7 @@ const Favorite = () => {
               <button
                 type="button"
                 className="btn-quitar-favorito"
-                onClick={() => removeFromFavorite(product.id)}
+                onClick={() => dispatch(removeFromFavorite(product.id))}
               >
                 Quitar
               </button>

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useCarrito } from '../context/CarritoContext';
-import { useFavorite } from '../context/FavoriteContext';
+import { useSelector } from 'react-redux';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
@@ -33,8 +32,10 @@ const IconBag = () => (
 );
 
 const Navbar = () => {
-  const { cantidadTotal } = useCarrito();
-  const { favoriteItems } = useFavorite();
+  const cantidadTotal = useSelector((state) =>
+    state.cart.items.reduce((acc, item) => acc + item.cantidad, 0)
+  );
+  const favoriteItems = useSelector((state) => state.favorites.items);
   const { usuario, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();

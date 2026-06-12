@@ -6,11 +6,13 @@ import './FormAuth.css';
 // Registro de usuario nuevo — POST /api/auth/register
 const Register = () => {
   const [form, setForm] = useState({
-    username: '',
+    nombreUsuario: '',
     email: '',
     password: '',
     nombre: '',
     apellido: '',
+    fechaNacimiento: '',
+    sexo: 'NO_INDICA',
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -26,13 +28,24 @@ const Register = () => {
     setError(null);
 
     try {
+      const payload = {
+        ...form,
+        nombreUsuario: form.nombreUsuario.trim(),
+        nombre: form.nombre.trim(),
+        apellido: form.apellido.trim(),
+        email: form.email.trim(),
+      };
+
       const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
 
-      if (!response.ok) throw new Error('Error al registrarse. Revisá los datos.');
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message || 'Error al registrarse. Revisa los datos.');
+      }
 
       // No hago login automático: mando al usuario a la pantalla de login
       alert('¡Registro exitoso! Ya podés iniciar sesión.');
@@ -77,14 +90,14 @@ const Register = () => {
 
           <div className="form-grupo">
             <label>Nombre de usuario</label>
-            <input
-              type="text"
-              name="username"
-              value={form.username}
-              onChange={handleChange}
-              placeholder="usuario123"
-            />
-          </div>
+              <input
+                type="text"
+                name="nombreUsuario"
+                value={form.nombreUsuario}
+                onChange={handleChange}
+                placeholder="usuario123"
+              />
+            </div>
 
           <div className="form-grupo">
             <label>Email</label>
@@ -94,7 +107,31 @@ const Register = () => {
               value={form.email}
               onChange={handleChange}
               placeholder="tu@email.com"
+              />
+          </div>
+
+          <div className="form-grupo">
+            <label>Fecha de nacimiento</label>
+            <input
+              type="date"
+              name="fechaNacimiento"
+              value={form.fechaNacimiento}
+              onChange={handleChange}
             />
+          </div>
+
+          <div className="form-grupo">
+            <label>Sexo</label>
+            <select
+              name="sexo"
+              value={form.sexo}
+              onChange={handleChange}
+            >
+              <option value="NO_INDICA">Prefiero no indicar</option>
+              <option value="FEMENINO">Femenino</option>
+              <option value="MASCULINO">Masculino</option>
+              <option value="OTRO">Otro</option>
+            </select>
           </div>
 
           <div className="form-grupo">
