@@ -9,11 +9,14 @@ import Favorite from './pages/Favorite';
 import Buscar from './pages/Buscar';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import AgregarProducto from './pages/AgregarProducto';
+// AgregarProducto ya no forma parte de un módulo admin
 import MisCompras from './pages/MisCompras';
 import MisVentas from './pages/MisVentas';
 import Perfil from './pages/Perfil';
 import './App.css';
+import AdminRoute from './components/AdminRoute';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminUsuarios from './pages/AdminUsuarios';
 
 function App() {
   return (
@@ -66,8 +69,23 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Solo para admin: agregar producto */}
-        <Route path="/admin/agregar-producto" element={<AgregarProducto />} />
+        {/* Rutas administrativas centradas en usuarios */}
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/usuarios"
+          element={
+            <AdminRoute>
+              <AdminUsuarios />
+            </AdminRoute>
+          }
+        />
       </Routes>
     </div>
   );

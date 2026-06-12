@@ -84,8 +84,8 @@ const Navbar = () => {
               Productos
             </button>
             {isAdmin && (
-              <Link to="/admin/agregar-producto" className="nav-link" onClick={() => setMenuAbierto(false)}>
-                + Producto
+              <Link to="/admin" className="nav-link" onClick={() => setMenuAbierto(false)}>
+                Administración
               </Link>
             )}
           </div>
