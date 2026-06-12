@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { apiFetch, API_URL } from '../services/api';
 import './FormAuth.css';
 
-// Login: POST /api/auth/login — el backend responde con el JWT en texto plano
+// Login: POST /api/auth/login — soporta JWT en JSON o en texto plano
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState(null);
@@ -31,8 +31,16 @@ const Login = () => {
 
       if (!response.ok) throw new Error('Email o contraseña incorrectos');
 
-      // response.text() porque el backend no devuelve JSON — si uso .json() rompe
-      const tokenJwt = await response.text();
+      const contentType = response.headers.get('content-type') ?? '';
+      const rawBody = await response.text();
+      let tokenJwt = rawBody.trim();
+
+      if (contentType.includes('application/json')) {
+        const payload = JSON.parse(rawBody);
+        tokenJwt = payload?.token?.trim?.() ?? '';
+      }
+
+      if (!tokenJwt) throw new Error('La respuesta de login no incluyó un token válido');
 
       const perfil = await apiFetch('/usuarios/me', { token: tokenJwt });
       login(tokenJwt, {
