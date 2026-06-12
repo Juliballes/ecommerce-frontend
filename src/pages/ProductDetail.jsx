@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useAuth } from '../context/AuthContext';
 import { apiFetch, API_URL } from '../services/api';
-import { addToCart } from '../store/slices/cartSlice';
+import { addCartItem } from '../services/cartApi';
+import { setCartItems } from '../store/slices/cartSlice';
 import { addFavorite, removeFromFavorite } from '../store/slices/favoriteSlice';
 import { getProductImageSrc } from '../utils/productImages';
 import './ProductDetail.css';
@@ -23,6 +25,7 @@ const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { token } = useAuth();
   const favoriteItems = useSelector((state) => state.favorites.items);
 
   const [product, setProduct] = useState(null);
@@ -31,6 +34,7 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [agregado, setAgregado] = useState(false);
+  const [agregandoCarrito, setAgregandoCarrito] = useState(false);
 
   // Cargo producto + reseñas + reputación del vendedor cuando cambia el id
   useEffect(() => {
@@ -76,10 +80,23 @@ const ProductDetail = () => {
   }, [id]);
 
   const handleAgregarAlCarrito = async () => {
-    if (product.stock > 0) {
-      dispatch(addToCart(product));
+    if (product.stock <= 0) return;
+
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    setAgregandoCarrito(true);
+    try {
+      const items = await addCartItem(token, product.id, 1);
+      dispatch(setCartItems(items));
       setAgregado(true);
       setTimeout(() => setAgregado(false), 2000);
+    } catch {
+      alert('No se pudo agregar el producto al carrito.');
+    } finally {
+      setAgregandoCarrito(false);
     }
   };
 
@@ -141,10 +158,14 @@ const ProductDetail = () => {
 
           <button
             className="btn-agregar-detalle"
-            disabled={product.stock === 0}
+            disabled={product.stock === 0 || agregandoCarrito}
             onClick={handleAgregarAlCarrito}
           >
-            {product.stock > 0 ? 'Agregar al carrito' : 'Agotado'}
+            {product.stock > 0
+              ? agregandoCarrito
+                ? 'Agregando...'
+                : 'Agregar al carrito'
+              : 'Agotado'}
           </button>
 
           <button

@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import ScrollToHash from './components/ScrollToHash';
 import ProtectedRoute from './components/ProtectedRoute';
+import CartSync from './components/CartSync';
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import Carrito from './pages/Carrito';
@@ -22,6 +23,7 @@ import AdminUsuarioDetalle from './pages/AdminUsuarioDetalle';
 function App() {
   return (
     <div>
+      <CartSync />
       <Navbar />
       <ScrollToHash />
       <Routes>

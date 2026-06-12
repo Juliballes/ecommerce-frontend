@@ -1,6 +1,10 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useAuth } from '../context/AuthContext';
 import { addFavorite, removeFromFavorite } from '../store/slices/favoriteSlice';
-import { addToCart } from '../store/slices/cartSlice';
+import { setCartItems } from '../store/slices/cartSlice';
+import { addCartItem } from '../services/cartApi';
 import { getProductImageSrc } from '../utils/productImages';
 import './CardProductos.css';
 
@@ -13,6 +17,9 @@ const IconHeart = ({ filled }) => (
 const CardProductos = ({ product, children }) => {
   const favoriteItems = useSelector((state) => state.favorites.items);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { token } = useAuth();
+  const [agregando, setAgregando] = useState(false);
   const isFavorite = favoriteItems.some((item) => item.id === product.id);
   const sinStock = product.stock === 0;
   const categoria = product.categorias?.[0]?.nombre;
@@ -28,7 +35,21 @@ const CardProductos = ({ product, children }) => {
     e.preventDefault();
     e.stopPropagation();
     if (sinStock) return;
-    dispatch(addToCart(product));
+
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    setAgregando(true);
+    try {
+      const items = await addCartItem(token, product.id, 1);
+      dispatch(setCartItems(items));
+    } catch {
+      alert('No se pudo agregar el producto al carrito.');
+    } finally {
+      setAgregando(false);
+    }
   };
 
   return (
@@ -70,9 +91,9 @@ const CardProductos = ({ product, children }) => {
             type="button"
             className="btn-carrito"
             onClick={handleAddToCart}
-            disabled={sinStock}
+            disabled={sinStock || agregando}
           >
-            {sinStock ? 'Sin stock' : 'Agregar al carrito'}
+            {sinStock ? 'Sin stock' : agregando ? 'Agregando...' : 'Agregar al carrito'}
           </button>
         </div>
       </div>
