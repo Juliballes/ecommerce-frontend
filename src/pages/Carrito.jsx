@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { clearCart, removeFromCart } from '../store/slices/cartSlice';
+import {
+  clearCart,
+  decreaseQuantity,
+  increaseQuantity,
+  removeFromCart,
+} from '../store/slices/cartSlice';
 import { getProductImageSrc } from '../utils/productImages';
 import './Carrito.css';
 
@@ -54,7 +59,25 @@ const Carrito = () => {
               <p className="item-precio">
                 ${Number(item.precio).toLocaleString('es-AR')}
               </p>
-              <p className="item-cantidad">Cantidad: {item.cantidad}</p>
+              <div className="item-cantidad-control" aria-label={`Cantidad de ${item.nombre}`}>
+                <button
+                  type="button"
+                  className="btn-cantidad"
+                  onClick={() => dispatch(decreaseQuantity(item.id))}
+                  aria-label="Restar una unidad"
+                >
+                  -
+                </button>
+                <span className="item-cantidad">{item.cantidad}</span>
+                <button
+                  type="button"
+                  className="btn-cantidad"
+                  onClick={() => dispatch(increaseQuantity(item.id))}
+                  aria-label="Sumar una unidad"
+                >
+                  +
+                </button>
+              </div>
             </div>
 
             <div className="item-subtotal">
