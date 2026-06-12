@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { addFavorite, removeFromFavorite } from '../store/slices/favoriteSlice';
+import { addToCart } from '../store/slices/cartSlice';
 import { getProductImageSrc } from '../utils/productImages';
 import './CardProductos.css';
 
@@ -21,6 +22,13 @@ const CardProductos = ({ product, children }) => {
     e.stopPropagation();
     if (isFavorite) dispatch(removeFromFavorite(product.id));
     else dispatch(addFavorite(product));
+  };
+
+  const handleAddToCart = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (sinStock) return;
+    dispatch(addToCart(product));
   };
 
   return (
@@ -54,9 +62,19 @@ const CardProductos = ({ product, children }) => {
           <p className="producto-categoria-texto">{categoria}</p>
         )}
 
-        <p className="producto-precio">
-          ${Number(product.precio).toLocaleString('es-AR')}
-        </p>
+        <div className="producto-footer">
+          <p className="producto-precio">
+            ${Number(product.precio).toLocaleString('es-AR')}
+          </p>
+          <button
+            type="button"
+            className="btn-carrito"
+            onClick={handleAddToCart}
+            disabled={sinStock}
+          >
+            {sinStock ? 'Sin stock' : 'Agregar al carrito'}
+          </button>
+        </div>
       </div>
     </article>
   );

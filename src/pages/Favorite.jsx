@@ -29,17 +29,21 @@ const Favorite = () => {
       <div className="favoritos-lista">
         {favoriteItems.map((product) => (
           <div key={product.favoritoId ?? product.id} className="favorito-item">
-            <img
-              src={getProductImageSrc(product)}
-              alt={product.nombre}
-              className="favorito-imagen"
-            />
+            <Link to={`/products/${product.id}`} className="favorito-imagen-link">
+              <img
+                src={getProductImageSrc(product)}
+                alt={product.nombre}
+                className="favorito-imagen"
+              />
+            </Link>
 
             <div className="favorito-info">
-              <p className="favorito-nombre">{product.nombre}</p>
-              <p className="favorito-precio">
-                ${Number(product.precio).toLocaleString('es-AR')}
-              </p>
+              <Link to={`/products/${product.id}`} className="favorito-detalle-link">
+                <p className="favorito-nombre">{product.nombre}</p>
+                <p className="favorito-precio">
+                  ${Number(product.precio).toLocaleString('es-AR')}
+                </p>
+              </Link>
             </div>
 
             <div className="favorito-acciones">
@@ -47,6 +51,7 @@ const Favorite = () => {
                 Ver detalle
               </Link>
               <button
+                type="button"
                 className="btn-quitar-favorito"
                 onClick={() => dispatch(removeFromFavorite(product.id))}
               >
