@@ -2,6 +2,33 @@ import React, { useEffect, useState } from 'react';
 import { API_URL } from '../services/api';
 import './ProductListCategoria.css';
 
+const normalizarCategoria = (nombre) => {
+  const normalizada = nombre
+    .replace('Perif??ricos', 'Perifericos')
+    .replace('PerifÃ©ricos', 'Perifericos')
+    .replace('Periféricos', 'Perifericos')
+    .replace('Audio y v??deo', 'Audio y video')
+    .replace('Audio y vÃ­deo', 'Audio y video')
+    .replace('Audio y vídeo', 'Audio y video');
+
+  return normalizada;
+};
+
+const quitarCategoriasDuplicadas = (categorias) => {
+  const porNombre = new Map();
+
+  categorias.forEach((cat) => {
+    const nombre = normalizarCategoria(cat.nombre);
+    const key = nombre.toLowerCase();
+
+    if (!porNombre.has(key)) {
+      porNombre.set(key, { ...cat, nombre });
+    }
+  });
+
+  return Array.from(porNombre.values());
+};
+
 const ProductListCategoria = ({
   variant = 'default',
   categoriaSeleccionada = null,
@@ -20,7 +47,7 @@ const ProductListCategoria = ({
         const response = await fetch(`${API_URL}/categorias`);
         if (!response.ok) throw new Error('Error al cargar categorias');
         const data = await response.json();
-        setCategorias(data);
+        setCategorias(quitarCategoriasDuplicadas(data));
       } catch (err) {
         setError(err.message);
       } finally {
