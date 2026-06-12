@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const AdminUsuarios = () => {
@@ -87,7 +88,7 @@ const AdminUsuarios = () => {
                 <th style={{ textAlign: 'left', padding: 8 }}>Apellido</th>
                 <th style={{ textAlign: 'left', padding: 8 }}>Email</th>
                 <th style={{ textAlign: 'left', padding: 8 }}>Rol</th>
-                <th style={{ textAlign: 'left', padding: 8 }}>Estado</th>
+                <th style={{ textAlign: 'left', padding: 8 }}>Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -98,7 +99,9 @@ const AdminUsuarios = () => {
                   <td style={{ padding: 8 }}>{u.apellido || u.lastName || ''}</td>
                   <td style={{ padding: 8 }}>{u.email || u.username || ''}</td>
                   <td style={{ padding: 8 }}>{u.role || (u.roles && u.roles.join(', ')) || ''}</td>
-                  <td style={{ padding: 8 }}>{u.estado || u.status || ''}</td>
+                  <td style={{ padding: 8 }}>
+                    <Link to={`/admin/usuarios/${u.id || u._id}`} style={{ marginRight: 8 }}>Ver</Link>
+                  </td>
                 </tr>
               ))}
             </tbody>

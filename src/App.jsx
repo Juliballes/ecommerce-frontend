@@ -17,6 +17,7 @@ import './App.css';
 import AdminRoute from './components/AdminRoute';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUsuarios from './pages/AdminUsuarios';
+import AdminUsuarioDetalle from './pages/AdminUsuarioDetalle';
 
 function App() {
   return (
@@ -83,6 +84,14 @@ function App() {
           element={
             <AdminRoute>
               <AdminUsuarios />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/usuarios/:id"
+          element={
+            <AdminRoute>
+              <AdminUsuarioDetalle />
             </AdminRoute>
           }
         />
