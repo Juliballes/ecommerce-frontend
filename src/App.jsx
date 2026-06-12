@@ -33,15 +33,8 @@ function App() {
         {/* Carrito de compras */}
         <Route path="/carrito" element={<Carrito />} />
 
-        {/* Favoritos: ruta protegida, requiere login */}
-        <Route
-          path="/favoritos"
-          element={
-            <ProtectedRoute>
-              <Favorite />
-            </ProtectedRoute>
-          }
-        />
+        {/* Favoritos */}
+        <Route path="/favoritos" element={<Favorite />} />
 
         {/* Mis compras: detalle de pedidos y reseñas */}
         <Route

@@ -1,19 +1,29 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useCarrito } from '../context/CarritoContext';
-import { useFavorite } from '../context/FavoriteContext';
-import { useAuth } from '../context/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
 import { apiFetch, API_URL } from '../services/api';
+import { addToCart } from '../store/slices/cartSlice';
+import { addFavorite, removeFromFavorite } from '../store/slices/favoriteSlice';
 import { getProductImageSrc } from '../utils/productImages';
 import './ProductDetail.css';
+
+const buscarProductoEnListado = async (id) => {
+  const response = await fetch(`${API_URL}/productos`);
+  if (!response.ok) throw new Error('Producto no encontrado');
+
+  const productos = await response.json();
+  const producto = productos.find((item) => String(item.id) === String(id));
+  if (!producto) throw new Error('Producto no encontrado');
+
+  return producto;
+};
 
 // Detalle de producto — :id viene de la ruta /products/:id (useParams)
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { agregarAlCarrito } = useCarrito();
-  const { favoriteItems, addToFavorite, removeFromFavorite } = useFavorite();
-  const { token } = useAuth();
+  const dispatch = useDispatch();
+  const favoriteItems = useSelector((state) => state.favorites.items);
 
   const [product, setProduct] = useState(null);
   const [resenas, setResenas] = useState([]);
@@ -28,13 +38,24 @@ const ProductDetail = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`${API_URL}/productos/${id}`);
-        if (!response.ok) throw new Error('Producto no encontrado');
-        const data = await response.json();
+        let data;
+
+        try {
+          const response = await fetch(`${API_URL}/productos/${id}`);
+          if (!response.ok) throw new Error('Producto no encontrado');
+          data = await response.json();
+        } catch {
+          data = await buscarProductoEnListado(id);
+        }
+
         setProduct(data);
 
-        const listaResenas = await apiFetch(`/resenas/productos/${id}`);
-        setResenas(listaResenas);
+        try {
+          const listaResenas = await apiFetch(`/resenas/productos/${id}`);
+          setResenas(listaResenas);
+        } catch {
+          setResenas([]);
+        }
 
         if (data.vendedorId) {
           try {
@@ -55,16 +76,10 @@ const ProductDetail = () => {
   }, [id]);
 
   const handleAgregarAlCarrito = async () => {
-    if (!token) {
-      navigate('/login');
-      return;
-    }
     if (product.stock > 0) {
-      const ok = await agregarAlCarrito(product);
-      if (ok) {
-        setAgregado(true);
-        setTimeout(() => setAgregado(false), 2000);
-      }
+      dispatch(addToCart(product));
+      setAgregado(true);
+      setTimeout(() => setAgregado(false), 2000);
     }
   };
 
@@ -135,12 +150,8 @@ const ProductDetail = () => {
           <button
             className="btn-favorito-detalle"
             onClick={async () => {
-              if (!token) {
-                navigate('/login');
-                return;
-              }
-              if (isFavorite) await removeFromFavorite(product.id);
-              else await addToFavorite(product);
+              if (isFavorite) dispatch(removeFromFavorite(product.id));
+              else dispatch(addFavorite(product));
             }}
           >
             {isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}

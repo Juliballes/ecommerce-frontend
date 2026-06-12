@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { apiFetch, API_URL } from '../services/api';
 import './FormAuth.css';
 
-// Login: POST /api/auth/login — el backend responde con el JWT en texto plano
+// Login: POST /api/auth/login — el backend responde JSON con el JWT en token
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState(null);
@@ -31,8 +31,8 @@ const Login = () => {
 
       if (!response.ok) throw new Error('Email o contraseña incorrectos');
 
-      // response.text() porque el backend no devuelve JSON — si uso .json() rompe
-      const tokenJwt = await response.text();
+      const data = await response.json();
+      const tokenJwt = data.token;
 
       const perfil = await apiFetch('/usuarios/me', { token: tokenJwt });
       login(tokenJwt, {
