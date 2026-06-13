@@ -18,7 +18,7 @@ const CardProductos = ({ product, children }) => {
   const favoriteItems = useSelector((state) => state.favorites.items);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const { token, isAdmin } = useAuth();
   const [agregando, setAgregando] = useState(false);
   const isFavorite = favoriteItems.some((item) => item.id === product.id);
   const sinStock = product.stock === 0;
@@ -55,14 +55,16 @@ const CardProductos = ({ product, children }) => {
   return (
     <article className="card-producto">
       <div className="producto-imagen-container">
-        <button
-          type="button"
-          className={`btn-favorito ${isFavorite ? 'activo' : ''}`}
-          onClick={handleFavoriteClick}
-          aria-label={isFavorite ? 'En favoritos' : 'Agregar a favoritos'}
-        >
-          <IconHeart filled={isFavorite} />
-        </button>
+        {!isAdmin && (
+          <button
+            type="button"
+            className={`btn-favorito ${isFavorite ? 'activo' : ''}`}
+            onClick={handleFavoriteClick}
+            aria-label={isFavorite ? 'En favoritos' : 'Agregar a favoritos'}
+          >
+            <IconHeart filled={isFavorite} />
+          </button>
+        )}
 
         {sinStock && <span className="producto-badge-agotado">Agotado</span>}
 
@@ -79,23 +81,27 @@ const CardProductos = ({ product, children }) => {
 
         <h3 className="producto-nombre">{product.nombre}</h3>
 
-        {categoria && (
-          <p className="producto-categoria-texto">{categoria}</p>
-        )}
+        {categoria && <p className="producto-categoria-texto">{categoria}</p>}
 
-        <div className="producto-footer">
+        {isAdmin ? (
           <p className="producto-precio">
             ${Number(product.precio).toLocaleString('es-AR')}
           </p>
-          <button
-            type="button"
-            className="btn-carrito"
-            onClick={handleAddToCart}
-            disabled={sinStock || agregando}
-          >
-            {sinStock ? 'Sin stock' : agregando ? 'Agregando...' : 'Agregar al carrito'}
-          </button>
-        </div>
+        ) : (
+          <div className="producto-footer">
+            <p className="producto-precio">
+              ${Number(product.precio).toLocaleString('es-AR')}
+            </p>
+            <button
+              type="button"
+              className="btn-carrito"
+              onClick={handleAddToCart}
+              disabled={sinStock || agregando}
+            >
+              {sinStock ? 'Sin stock' : agregando ? 'Agregando...' : 'Agregar al carrito'}
+            </button>
+          </div>
+        )}
       </div>
     </article>
   );

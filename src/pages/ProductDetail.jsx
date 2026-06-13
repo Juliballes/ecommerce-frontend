@@ -25,7 +25,7 @@ const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { token } = useAuth();
+  const { token, isAdmin } = useAuth();
   const favoriteItems = useSelector((state) => state.favorites.items);
 
   const [product, setProduct] = useState(null);
@@ -135,7 +135,7 @@ const ProductDetail = () => {
 
           {resumenVendedor && (
             <p className="detalle-reputacion">
-              ⭐ {resumenVendedor.promedioPuntuacion?.toFixed(1)} —{' '}
+              ★ {resumenVendedor.promedioPuntuacion?.toFixed(1)} —{' '}
               {resumenVendedor.cantidadResenas} reseñas
             </p>
           )}
@@ -152,31 +152,40 @@ const ProductDetail = () => {
             )}
           </div>
 
-          {agregado && (
+          {!isAdmin && agregado && (
             <div className="alerta-agregado">✔ Producto agregado al carrito</div>
           )}
 
-          <button
-            className="btn-agregar-detalle"
-            disabled={product.stock === 0 || agregandoCarrito}
-            onClick={handleAgregarAlCarrito}
-          >
-            {product.stock > 0
-              ? agregandoCarrito
-                ? 'Agregando...'
-                : 'Agregar al carrito'
-              : 'Agotado'}
-          </button>
+          {isAdmin ? (
+            <p className="detalle-admin-note">
+              Vista administrativa: las acciones de compra y favoritos estan ocultas
+              para cuentas ADMIN.
+            </p>
+          ) : (
+            <>
+              <button
+                className="btn-agregar-detalle"
+                disabled={product.stock === 0 || agregandoCarrito}
+                onClick={handleAgregarAlCarrito}
+              >
+                {product.stock > 0
+                  ? agregandoCarrito
+                    ? 'Agregando...'
+                    : 'Agregar al carrito'
+                  : 'Agotado'}
+              </button>
 
-          <button
-            className="btn-favorito-detalle"
-            onClick={async () => {
-              if (isFavorite) dispatch(removeFromFavorite(product.id));
-              else dispatch(addFavorite(product));
-            }}
-          >
-            {isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-          </button>
+              <button
+                className="btn-favorito-detalle"
+                onClick={async () => {
+                  if (isFavorite) dispatch(removeFromFavorite(product.id));
+                  else dispatch(addFavorite(product));
+                }}
+              >
+                {isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -190,7 +199,7 @@ const ProductDetail = () => {
             {resenas.map((r) => (
               <div key={r.id} className="resena-card">
                 <p className="resena-autor">{r.nombreComprador}</p>
-                <p className="resena-estrellas">{'⭐'.repeat(r.puntuacion)}</p>
+                <p className="resena-estrellas">{'★'.repeat(r.puntuacion)}</p>
                 {r.comentario && <p className="resena-comentario">{r.comentario}</p>}
                 <p className="resena-fecha">
                   {r.fecha ? new Date(r.fecha).toLocaleDateString('es-AR') : ''}

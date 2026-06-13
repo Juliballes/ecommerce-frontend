@@ -1,17 +1,30 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import './Admin.css';
 
 const AdminDashboard = () => {
   return (
-    <div style={{ padding: 24 }}>
-      <h1>Panel de Administración</h1>
-      <p>Bienvenido al panel administrativo. Aquí puede gestionar usuarios registrados.</p>
+    <div className="admin-page">
+      <header className="admin-hero">
+        <span className="admin-eyebrow">Administracion</span>
+        <h1 className="admin-title">Panel de Administracion</h1>
+        <p className="admin-description">
+          Gestion y supervision de usuarios registrados.
+        </p>
+      </header>
 
-      <ul>
-        <li>
-          <Link to="/admin/usuarios">Ver usuarios</Link>
-        </li>
-      </ul>
+      <section className="admin-grid">
+        <article className="admin-card">
+          <h2 className="admin-card-title">Usuarios</h2>
+          <p className="admin-card-copy">
+            Ver y supervisar cuentas registradas del sistema desde un espacio
+            administrativo separado del flujo comercial.
+          </p>
+          <Link to="/admin/usuarios" className="admin-button-primary">
+            Gestionar usuarios
+          </Link>
+        </article>
+      </section>
     </div>
   );
 };
