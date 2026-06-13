@@ -1,4 +1,5 @@
 import { apiFetch } from './api';
+import { mergeProductImages } from '../utils/productImages';
 
 const mapFavorite = (fav) => ({
   id: fav.productId,
@@ -7,9 +8,22 @@ const mapFavorite = (fav) => ({
   precio: fav.precio,
 });
 
+const hydrateFavoriteImages = (items) =>
+  Promise.all(
+    items.map(async (item) => {
+      try {
+        const productDetail = await apiFetch(`/productos/${item.id}`);
+        return mergeProductImages(item, productDetail);
+      } catch {
+        return item;
+      }
+    })
+  );
+
 export const getFavorites = async (token) => {
   const data = await apiFetch('/favorites', { token });
-  return Array.isArray(data) ? data.map(mapFavorite) : [];
+  const items = Array.isArray(data) ? data.map(mapFavorite) : [];
+  return hydrateFavoriteImages(items);
 };
 
 export const addFavoriteApi = async (token, productId) => {
