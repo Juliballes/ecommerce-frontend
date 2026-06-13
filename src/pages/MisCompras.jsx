@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { apiFetch } from '../services/api';
+import { getMisPedidos } from '../services/pedidoApi';
 import './Pedidos.css';
 
 const formatearFecha = (fecha) =>
@@ -72,13 +73,17 @@ const MisCompras = () => {
   const [confirmandoRecepcion, setConfirmandoRecepcion] = useState(null);
 
   const cargarPedidos = useCallback(async () => {
-    if (!token) return;
+    if (!token) {
+      setPedidos([]);
+      setLoading(false);
+      return;
+    }
 
     setLoading(true);
     setError(null);
     try {
       const [data, perfil] = await Promise.all([
-        apiFetch('/pedidos/mis-pedidos', { token }),
+        getMisPedidos(token),
         apiFetch('/usuarios/me', { token }),
       ]);
 

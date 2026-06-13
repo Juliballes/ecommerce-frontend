@@ -8,6 +8,7 @@ import {
   removeCartLine,
   updateCartItemQuantity,
 } from '../services/cartApi';
+import { checkoutCart } from '../services/pedidoApi';
 import { getProductImageSrc } from '../utils/productImages';
 import './Carrito.css';
 
@@ -18,6 +19,7 @@ const Carrito = () => {
   const navigate = useNavigate();
   const { token } = useAuth();
   const [compraConfirmada, setCompraConfirmada] = useState(false);
+  const [pedidoConfirmado, setPedidoConfirmado] = useState(null);
   const [operando, setOperando] = useState(false);
 
   const calcularTotal = () =>
@@ -79,8 +81,9 @@ const Carrito = () => {
 
     setOperando(true);
     try {
-      const carritoActualizado = await clearRemoteCart(token);
-      dispatch(setCartItems(carritoActualizado));
+      const pedido = await checkoutCart(token);
+      dispatch(setCartItems([]));
+      setPedidoConfirmado(pedido);
       setCompraConfirmada(true);
     } catch {
       alert('No se pudo confirmar la compra.');
@@ -95,7 +98,7 @@ const Carrito = () => {
         <h2>{compraConfirmada ? 'Compra confirmada' : 'Tu carrito esta vacio'}</h2>
         <p>
           {compraConfirmada
-            ? 'Gracias por tu compra.'
+            ? `Gracias por tu compra${pedidoConfirmado?.id ? `, pedido #${pedidoConfirmado.id}` : ''}.`
             : 'Explora nuestros productos y agrega algo.'}
         </p>
         <button className="btn-ir-home" onClick={() => navigate('/')}>
