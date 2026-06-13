@@ -6,6 +6,7 @@ import { apiFetch, API_URL } from '../services/api';
 import { addCartItem } from '../services/cartApi';
 import { setCartItems } from '../store/slices/cartSlice';
 import { addFavorite, removeFromFavorite } from '../store/slices/favoriteSlice';
+import { addFavoriteApi, removeFavoriteApi } from '../services/favoritesApi';
 import { getProductImageSrc } from '../utils/productImages';
 import './ProductDetail.css';
 
@@ -171,8 +172,26 @@ const ProductDetail = () => {
           <button
             className="btn-favorito-detalle"
             onClick={async () => {
-              if (isFavorite) dispatch(removeFromFavorite(product.id));
-              else dispatch(addFavorite(product));
+              if (isFavorite) {
+                const favoriteItem = favoriteItems.find((item) => item.id === product.id);
+                dispatch(removeFromFavorite(product.id));
+                if (token && favoriteItem?.favoritoId) {
+                  try {
+                    await removeFavoriteApi(token, favoriteItem.favoritoId);
+                  } catch {
+                    dispatch(addFavorite(favoriteItem));
+                  }
+                }
+              } else {
+                if (token) {
+                  try {
+                    const saved = await addFavoriteApi(token, product.id);
+                    dispatch(addFavorite({ ...product, favoritoId: saved.favoritoId }));
+                  } catch { /* ignore */ }
+                } else {
+                  dispatch(addFavorite(product));
+                }
+              }
             }}
           >
             {isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
