@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import ScrollToHash from './components/ScrollToHash';
 import ProtectedRoute from './components/ProtectedRoute';
 import CartSync from './components/CartSync';
+import FavoritesSync from './components/FavoritesSync';
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import Carrito from './pages/Carrito';
@@ -24,6 +25,7 @@ function App() {
   return (
     <div>
       <CartSync />
+      <FavoritesSync />
       <Navbar />
       <ScrollToHash />
       <Routes>

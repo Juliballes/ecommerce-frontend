@@ -1,6 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeFromFavorite } from '../store/slices/favoriteSlice';
+import { addFavorite, removeFromFavorite } from '../store/slices/favoriteSlice';
+import { removeFavoriteApi } from '../services/favoritesApi';
+import { useAuth } from '../context/AuthContext';
 import { getProductImageSrc } from '../utils/productImages';
 import './Favorite.css';
 
@@ -9,6 +11,7 @@ const Favorite = () => {
   const favoriteItems = useSelector((state) => state.favorites.items);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { token } = useAuth();
 
   if (favoriteItems.length === 0) {
     return (
@@ -53,7 +56,16 @@ const Favorite = () => {
               <button
                 type="button"
                 className="btn-quitar-favorito"
-                onClick={() => dispatch(removeFromFavorite(product.id))}
+                onClick={async () => {
+                  dispatch(removeFromFavorite(product.id));
+                  if (token && product.favoritoId) {
+                    try {
+                      await removeFavoriteApi(token, product.favoritoId);
+                    } catch {
+                      dispatch(addFavorite(product));
+                    }
+                  }
+                }}
               >
                 Quitar
               </button>
