@@ -11,7 +11,7 @@ import Favorite from './pages/Favorite';
 import Buscar from './pages/Buscar';
 import Login from './pages/Login';
 import Register from './pages/Register';
-// AgregarProducto ya no forma parte de un módulo admin
+import AgregarProducto from './pages/AgregarProducto';
 import MisCompras from './pages/MisCompras';
 import MisVentas from './pages/MisVentas';
 import Perfil from './pages/Perfil';
@@ -66,6 +66,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Perfil />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/vender"
+          element={
+            <ProtectedRoute>
+              <AgregarProducto />
             </ProtectedRoute>
           }
         />

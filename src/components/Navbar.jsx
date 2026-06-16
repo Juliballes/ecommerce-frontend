@@ -83,6 +83,11 @@ const Navbar = () => {
             <button type="button" className="nav-link nav-link-btn" onClick={irAProductos}>
               Productos
             </button>
+            {usuario && (
+              <Link to="/vender" className="nav-link" onClick={() => setMenuAbierto(false)}>
+                Vender
+              </Link>
+            )}
             {isAdmin && (
               <Link to="/admin" className="nav-link" onClick={() => setMenuAbierto(false)}>
                 Administración
@@ -119,6 +124,7 @@ const Navbar = () => {
                     Hola, {usuario.nombre || usuario.username || usuario.email}
                   </p>
                   <Link to="/perfil" onClick={() => setMenuUsuario(false)}>Mi perfil</Link>
+                  <Link to="/vender" onClick={() => setMenuUsuario(false)}>Publicar producto</Link>
                   <Link to="/mis-compras" onClick={() => setMenuUsuario(false)}>Mis compras</Link>
                   <Link to="/mis-ventas" onClick={() => setMenuUsuario(false)}>Mis ventas</Link>
                   <button type="button" onClick={handleLogout}>Cerrar sesión</button>

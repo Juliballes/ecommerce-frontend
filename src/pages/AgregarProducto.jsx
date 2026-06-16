@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../services/api';
 import './AgregarProducto.css';
 
-// Formulario admin para publicar productos (POST /api/productos)
+// Formulario para publicar productos (POST /api/productos).
 const AgregarProducto = () => {
-  const { token, isAdmin } = useAuth();
+  const { token } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -25,13 +25,14 @@ const AgregarProducto = () => {
     const fetchCategorias = async () => {
       try {
         const response = await fetch(`${API_URL}/categorias`);
-        if (!response.ok) throw new Error('Error al cargar categorías');
+        if (!response.ok) throw new Error('Error al cargar categorias');
         const data = await response.json();
         setCategorias(data);
       } catch (err) {
         console.error(err);
       }
     };
+
     fetchCategorias();
   }, []);
 
@@ -42,9 +43,8 @@ const AgregarProducto = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isAdmin) {
-      alert('No tenés permisos para realizar esta acción.');
-      navigate('/');
+    if (!token) {
+      navigate('/login');
       return;
     }
 
@@ -52,12 +52,12 @@ const AgregarProducto = () => {
     setError(null);
 
     const nuevoProducto = {
-      nombre: form.nombre,
-      descripcion: form.descripcion,
+      nombre: form.nombre.trim(),
+      descripcion: form.descripcion.trim(),
       precio: parseFloat(form.precio),
-      stock: parseInt(form.stock),
-      categorias: [{ id: parseInt(form.categoriaId) }],
-      imagenes: form.imagen ? [form.imagen] : [],
+      stock: parseInt(form.stock, 10),
+      categoriaIds: [parseInt(form.categoriaId, 10)],
+      imagenes: [form.imagen.trim()],
     };
 
     try {
@@ -70,10 +70,10 @@ const AgregarProducto = () => {
         body: JSON.stringify(nuevoProducto),
       });
 
-      if (!response.ok) throw new Error('Error al crear el producto');
+      if (!response.ok) throw new Error('Error al publicar el producto');
 
-      alert('Producto creado exitosamente.');
-      navigate('/');
+      alert('Producto publicado exitosamente.');
+      navigate('/perfil');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -85,7 +85,7 @@ const AgregarProducto = () => {
     return (
       <div className="ap-denegado">
         <h2>Acceso denegado</h2>
-        <p>Debés iniciar sesión para acceder a esta sección.</p>
+        <p>Debes iniciar sesion para acceder a esta seccion.</p>
         <button onClick={() => navigate('/login')}>Ir al login</button>
       </div>
     );
@@ -93,11 +93,11 @@ const AgregarProducto = () => {
 
   return (
     <div className="ap-container">
-      <h1 className="ap-titulo">Agregar Producto</h1>
+      <h1 className="ap-titulo">Publicar producto</h1>
 
       {error && <div className="ap-error">{error}</div>}
 
-      <div className="ap-form">
+      <form className="ap-form" onSubmit={handleSubmit}>
         <div className="form-grupo">
           <label>Nombre del producto</label>
           <input
@@ -106,16 +106,17 @@ const AgregarProducto = () => {
             value={form.nombre}
             onChange={handleChange}
             placeholder="Ej: Laptop Pro 15"
+            required
           />
         </div>
 
         <div className="form-grupo">
-          <label>Descripción</label>
+          <label>Descripcion</label>
           <textarea
             name="descripcion"
             value={form.descripcion}
             onChange={handleChange}
-            placeholder="Describí el producto..."
+            placeholder="Describi el producto..."
             rows={3}
           />
         </div>
@@ -129,7 +130,9 @@ const AgregarProducto = () => {
               value={form.precio}
               onChange={handleChange}
               placeholder="0.00"
-              min="0"
+              min="0.01"
+              step="0.01"
+              required
             />
           </div>
 
@@ -142,14 +145,16 @@ const AgregarProducto = () => {
               onChange={handleChange}
               placeholder="0"
               min="0"
+              step="1"
+              required
             />
           </div>
         </div>
 
         <div className="form-grupo">
-          <label>Categoría</label>
-          <select name="categoriaId" value={form.categoriaId} onChange={handleChange}>
-            <option value="">Seleccioná una categoría</option>
+          <label>Categoria</label>
+          <select name="categoriaId" value={form.categoriaId} onChange={handleChange} required>
+            <option value="">Selecciona una categoria</option>
             {categorias.map((cat) => (
               <option key={cat.id} value={cat.id}>
                 {cat.nombre}
@@ -161,25 +166,25 @@ const AgregarProducto = () => {
         <div className="form-grupo">
           <label>URL de imagen</label>
           <input
-            type="text"
+            type="url"
             name="imagen"
             value={form.imagen}
             onChange={handleChange}
             placeholder="https://..."
+            required
           />
         </div>
 
-        {/* Preview de imagen si hay URL */}
         {form.imagen && (
           <div className="ap-preview">
             <img src={form.imagen} alt="preview" />
           </div>
         )}
 
-        <button className="btn-ap" onClick={handleSubmit} disabled={loading}>
+        <button type="submit" className="btn-ap" disabled={loading}>
           {loading ? 'Guardando...' : 'Publicar producto'}
         </button>
-      </div>
+      </form>
     </div>
   );
 };

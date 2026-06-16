@@ -194,11 +194,9 @@ const Perfil = () => {
       <section className="perfil-seccion">
         <div className="perfil-seccion-header">
           <h2>Mis publicaciones</h2>
-          {perfil.role === 'ADMIN' && (
-            <Link to="/admin/agregar-producto" className="perfil-link">
-              + Agregar producto
-            </Link>
-          )}
+          <Link to="/vender" className="perfil-link">
+            + Agregar producto
+          </Link>
         </div>
 
         {!perfil.publicaciones?.length ? (
