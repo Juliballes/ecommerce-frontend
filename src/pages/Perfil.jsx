@@ -31,7 +31,7 @@ const formatearPrecio = (monto) =>
 
 // Perfil del usuario logueado — GET/PATCH /api/usuarios/me
 const Perfil = () => {
-  const { token, updateUsuario } = useAuth();
+  const { token, updateUsuario, isAdmin } = useAuth();
   const [perfil, setPerfil] = useState(null);
   const [form, setForm] = useState({
     nombre: '',
@@ -104,7 +104,7 @@ const Perfil = () => {
       });
       setMensaje('Perfil actualizado correctamente.');
     } catch (err) {
-      setError('No se pudo guardar el perfil. Revisá los datos.');
+      setError('No se pudo guardar el perfil. Revisa los datos.');
     } finally {
       setGuardando(false);
     }
@@ -191,81 +191,98 @@ const Perfil = () => {
         </form>
       </section>
 
-      <section className="perfil-seccion">
-        <div className="perfil-seccion-header">
-          <h2>Mis publicaciones</h2>
-          <Link to="/vender" className="perfil-link">
-            + Agregar producto
-          </Link>
-        </div>
+      {isAdmin ? (
+        <section className="perfil-seccion">
+          <div className="perfil-seccion-header">
+            <h2>Administracion</h2>
+            <Link to="/admin" className="perfil-link">
+              Ir al panel →
+            </Link>
+          </div>
+          <p className="perfil-vacio">
+            Esta cuenta tiene acceso administrativo y mantiene oculto el flujo
+            comercial del ecommerce.
+          </p>
+        </section>
+      ) : (
+        <>
+          <section className="perfil-seccion">
+            <div className="perfil-seccion-header">
+              <h2>Mis publicaciones</h2>
+              <Link to="/vender" className="perfil-link">
+                + Agregar producto
+              </Link>
+            </div>
 
-        {!perfil.publicaciones?.length ? (
-          <p className="perfil-vacio">Todavía no publicaste productos.</p>
-        ) : (
-          <ul className="perfil-lista">
-            {perfil.publicaciones.map((pub) => (
-              <li key={pub.id} className="perfil-lista-item">
-                <Link to={`/products/${pub.id}`} className="perfil-link">
-                  {pub.nombre}
-                </Link>
-                <span>
-                  {formatearPrecio(pub.precio)} · Stock: {pub.stock}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+            {!perfil.publicaciones?.length ? (
+              <p className="perfil-vacio">Todavía no publicaste productos.</p>
+            ) : (
+              <ul className="perfil-lista">
+                {perfil.publicaciones.map((pub) => (
+                  <li key={pub.id} className="perfil-lista-item">
+                    <Link to={`/products/${pub.id}`} className="perfil-link">
+                      {pub.nombre}
+                    </Link>
+                    <span>
+                      {formatearPrecio(pub.precio)} · Stock: {pub.stock}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
 
-      <section className="perfil-seccion">
-        <div className="perfil-seccion-header">
-          <h2>Últimas compras</h2>
-          <Link to="/mis-compras" className="perfil-link">
-            Ver todas →
-          </Link>
-        </div>
+          <section className="perfil-seccion">
+            <div className="perfil-seccion-header">
+              <h2>Últimas compras</h2>
+              <Link to="/mis-compras" className="perfil-link">
+                Ver todas →
+              </Link>
+            </div>
 
-        {!perfil.compras?.length ? (
-          <p className="perfil-vacio">No tenés compras registradas.</p>
-        ) : (
-          <ul className="perfil-lista">
-            {perfil.compras.map((compra) => (
-              <li key={compra.id} className="perfil-lista-item">
-                <span>Pedido #{compra.id}</span>
-                <span>
-                  {etiquetaEstado(compra.estado)} · {formatearPrecio(compra.total)}
-                </span>
-                <span className="perfil-fecha">{formatearFecha(compra.fecha)}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+            {!perfil.compras?.length ? (
+              <p className="perfil-vacio">No tenés compras registradas.</p>
+            ) : (
+              <ul className="perfil-lista">
+                {perfil.compras.map((compra) => (
+                  <li key={compra.id} className="perfil-lista-item">
+                    <span>Pedido #{compra.id}</span>
+                    <span>
+                      {etiquetaEstado(compra.estado)} · {formatearPrecio(compra.total)}
+                    </span>
+                    <span className="perfil-fecha">{formatearFecha(compra.fecha)}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
 
-      <section className="perfil-seccion">
-        <div className="perfil-seccion-header">
-          <h2>Últimas ventas</h2>
-          <Link to="/mis-ventas" className="perfil-link">
-            Ver todas →
-          </Link>
-        </div>
+          <section className="perfil-seccion">
+            <div className="perfil-seccion-header">
+              <h2>Últimas ventas</h2>
+              <Link to="/mis-ventas" className="perfil-link">
+                Ver todas →
+              </Link>
+            </div>
 
-        {!perfil.ventas?.length ? (
-          <p className="perfil-vacio">Todavía no vendiste productos.</p>
-        ) : (
-          <ul className="perfil-lista">
-            {perfil.ventas.map((venta) => (
-              <li key={venta.id} className="perfil-lista-item">
-                <span>Pedido #{venta.id}</span>
-                <span>
-                  {etiquetaEstado(venta.estado)} · {formatearPrecio(venta.total)}
-                </span>
-                <span className="perfil-fecha">{formatearFecha(venta.fecha)}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+            {!perfil.ventas?.length ? (
+              <p className="perfil-vacio">Todavía no vendiste productos.</p>
+            ) : (
+              <ul className="perfil-lista">
+                {perfil.ventas.map((venta) => (
+                  <li key={venta.id} className="perfil-lista-item">
+                    <span>Pedido #{venta.id}</span>
+                    <span>
+                      {etiquetaEstado(venta.estado)} · {formatearPrecio(venta.total)}
+                    </span>
+                    <span className="perfil-fecha">{formatearFecha(venta.fecha)}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </>
+      )}
     </div>
   );
 };

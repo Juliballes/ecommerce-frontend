@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { apiFetch } from '../services/api';
+import {
+  fetchAdminUserById,
+  getAdminRequestMessage,
+  getAdminUserStatus,
+} from '../services/adminUsers';
+import './Admin.css';
 
 const AdminUsuarioDetalle = () => {
   const { id } = useParams();
@@ -10,73 +15,120 @@ const AdminUsuarioDetalle = () => {
   const [usuario, setUsuario] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    const load = async () => {
+    let activo = true;
+
+    const cargarUsuario = async () => {
       setLoading(true);
+      setError(null);
+
       try {
-        const res = await apiFetch(`/usuarios/${id}`, { token });
-        setUsuario(res);
-      } catch (e) {
-        setError('No se pudo cargar el usuario.');
+        const data = await fetchAdminUserById(id, token);
+        if (!activo) return;
+        setUsuario(data);
+      } catch (err) {
+        console.error('Error real al obtener detalle de usuario admin:', err);
+        if (!activo) return;
+        setUsuario(null);
+        setError(
+          getAdminRequestMessage(err, {
+            defaultMessage: 'No se pudo cargar el usuario seleccionado.',
+          })
+        );
       } finally {
-        setLoading(false);
+        if (activo) {
+          setLoading(false);
+        }
       }
     };
-    load();
+
+    cargarUsuario();
+
+    return () => {
+      activo = false;
+    };
   }, [id, token]);
 
-  const handleBaja = async () => {
-    if (!window.confirm('Confirmar baja del usuario (acción irreversible si el backend lo permite).')) return;
-    setBusy(true);
-    setError(null);
-    try {
-      // Intentamos DELETE por convención REST; si el backend no lo implementa devolverá 4xx/5xx
-      await apiFetch(`/usuarios/${id}`, { token, method: 'DELETE' });
-      // Si responde OK/204, volvemos al listado
-      navigate('/admin/usuarios');
-    } catch (e) {
-      // Si falla, informamos y no rompemos la UI
-      setError('La operación de baja falló: ' + (e.message || e.status || 'error'));
-    } finally {
-      setBusy(false);
-    }
-  };
+  if (loading) {
+    return (
+      <div className="admin-page">
+        <div className="admin-status-panel">
+          <p>Cargando usuarios...</p>
+        </div>
+      </div>
+    );
+  }
 
-  if (loading) return <div style={{ padding: 24 }}>Cargando usuario...</div>;
-  if (error) return <div style={{ padding: 24, color: 'red' }}>{error}</div>;
-  if (!usuario) return <div style={{ padding: 24 }}>Usuario no encontrado.</div>;
+  if (error) {
+    return (
+      <div className="admin-page">
+        <div className="admin-status-panel error">
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!usuario) {
+    return (
+      <div className="admin-page">
+        <div className="admin-status-panel">
+          <p>No hay usuarios registrados</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: 24 }}>
-      <h1>Usuario #{usuario.id} — {usuario.nombre} {usuario.apellido}</h1>
+    <div className="admin-page">
+      <header className="admin-hero">
+        <span className="admin-eyebrow">Administracion</span>
+        <h1 className="admin-title">Usuario #{usuario.id}</h1>
+        <p className="admin-description">
+          Resumen del perfil seleccionado dentro del modulo de gestion de usuarios.
+        </p>
+      </header>
 
-      <div style={{ marginTop: 12 }}>
-        <p><strong>Email:</strong> {usuario.email}</p>
-        <p><strong>Nombre de usuario:</strong> {usuario.nombreUsuario || '-'}</p>
-        <p><strong>Rol:</strong> {String(usuario.role)}</p>
-        <p><strong>Sexo:</strong> {String(usuario.sexo || '')}</p>
-        <p><strong>Fecha nacimiento:</strong> {usuario.fechaNacimiento || '-'}</p>
-      </div>
-
-      <div style={{ marginTop: 18 }}>
-        <button onClick={() => navigate('/admin/usuarios')} style={{ marginRight: 8 }}>Volver</button>
-        <button onClick={handleBaja} disabled={busy} style={{ background: 'crimson', color: 'white' }}>
-          {busy ? 'Procesando...' : 'Dar de baja'}
+      <div className="admin-actions">
+        <button
+          type="button"
+          className="admin-back-link"
+          onClick={() => navigate('/admin/usuarios')}
+        >
+          Volver al listado
         </button>
+        <Link to="/admin" className="admin-button-secondary">
+          Ir al panel
+        </Link>
       </div>
 
-      {usuario.publicaciones && usuario.publicaciones.length > 0 && (
-        <div style={{ marginTop: 20 }}>
-          <h3>Publicaciones</h3>
-          <ul>
-            {usuario.publicaciones.map(p => (
-              <li key={p.id}>{p.nombre} — ${p.precio}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <section className="admin-detail-grid admin-detail-section">
+        <article className="admin-detail-card">
+          <p className="admin-detail-label">Nombre</p>
+          <p className="admin-detail-value">{usuario.nombre || '-'}</p>
+        </article>
+        <article className="admin-detail-card">
+          <p className="admin-detail-label">Apellido</p>
+          <p className="admin-detail-value">{usuario.apellido || '-'}</p>
+        </article>
+        <article className="admin-detail-card">
+          <p className="admin-detail-label">Email</p>
+          <p className="admin-detail-value">{usuario.email || '-'}</p>
+        </article>
+        <article className="admin-detail-card">
+          <p className="admin-detail-label">Rol</p>
+          <p className="admin-detail-value">{String(usuario.role || '-').toUpperCase()}</p>
+        </article>
+        <article className="admin-detail-card">
+          <p className="admin-detail-label">Estado</p>
+          <p className="admin-detail-value">{getAdminUserStatus(usuario)}</p>
+        </article>
+        <article className="admin-detail-card">
+          <p className="admin-detail-label">Nombre de usuario</p>
+          <p className="admin-detail-value subtle">{usuario.nombreUsuario || '-'}</p>
+        </article>
+      </section>
     </div>
   );
 };

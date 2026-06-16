@@ -1,111 +1,182 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import {
+  fetchAdminUsers,
+  getAdminRequestMessage,
+  getAdminUserStatus,
+  normalizeUsersList,
+} from '../services/adminUsers';
+import './Admin.css';
+
+const IconSearch = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+    <circle cx="11" cy="11" r="7" />
+    <path d="M20 20l-3.5-3.5" />
+  </svg>
+);
+
+const normalizarRol = (role) => String(role || '-').toUpperCase();
 
 const AdminUsuarios = () => {
   const { token } = useAuth();
   const [usuarios, setUsuarios] = useState([]);
-  const [q, setQ] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [query, setQuery] = useState('');
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchUsuarios = async () => {
+    let activo = true;
+
+    const cargarUsuarios = async () => {
       setLoading(true);
       setError(null);
 
-      // Primero intento endpoint administrativo, si falla uso el genérico
-      const endpoints = ['/api/admin/usuarios', '/api/usuarios'];
-
-      let data = null;
-
-      for (const ep of endpoints) {
-        try {
-          const res = await fetch(ep, {
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
-          });
-
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-          data = await res.json();
-          break;
-        } catch (err) {
-          // intento siguiente endpoint
+      try {
+        const data = await fetchAdminUsers(token);
+        if (!activo) return;
+        setUsuarios(normalizeUsersList(data));
+      } catch (err) {
+        console.error('Error real al obtener usuarios admin:', err);
+        if (!activo) return;
+        setUsuarios([]);
+        setError(
+          getAdminRequestMessage(err, {
+            defaultMessage: 'No se pudieron obtener usuarios del backend.',
+          })
+        );
+      } finally {
+        if (activo) {
+          setLoading(false);
         }
       }
-
-      if (!data) {
-        setError('No se pudieron obtener usuarios del backend.');
-        setUsuarios([]);
-        setLoading(false);
-        return;
-      }
-
-      // Si el backend devuelve un objeto con lista bajo `usuarios`, normalizo
-      const list = Array.isArray(data) ? data : data.usuarios || data.data || [];
-      setUsuarios(list);
-      setLoading(false);
     };
 
-    fetchUsuarios();
+    cargarUsuarios();
+
+    return () => {
+      activo = false;
+    };
   }, [token]);
 
-  const filtered = usuarios.filter((u) => {
-    const term = q.trim().toLowerCase();
-    if (!term) return true;
-    return (
-      String(u.id || u._id || u.uuid || '').toLowerCase().includes(term) ||
-      String(u.nombre || u.firstName || u.name || '').toLowerCase().includes(term) ||
-      String(u.apellido || u.lastName || '').toLowerCase().includes(term) ||
-      String(u.email || u.username || '').toLowerCase().includes(term) ||
-      String(u.role || u.roles || '').toLowerCase().includes(term)
-    );
-  });
+  const usuariosFiltrados = useMemo(() => {
+    const term = query.trim().toLowerCase();
+    if (!term) return usuarios;
+
+    return usuarios.filter((usuario) => {
+      const estado = getAdminUserStatus(usuario).toLowerCase();
+      return [
+        usuario.id,
+        usuario.nombre,
+        usuario.apellido,
+        usuario.email,
+        usuario.role,
+        estado,
+      ]
+        .map((value) => String(value || '').toLowerCase())
+        .some((value) => value.includes(term));
+    });
+  }, [query, usuarios]);
 
   return (
-    <div style={{ padding: 24 }}>
-      <h1>Gestión de Usuarios</h1>
+    <div className="admin-page">
+      <header className="admin-hero">
+        <span className="admin-eyebrow">Administracion</span>
+        <h1 className="admin-title">Gestion de Usuarios</h1>
+        <p className="admin-description">
+          Supervisa cuentas registradas, roles asignados y estado general de acceso.
+        </p>
+      </header>
 
-      <div style={{ marginBottom: 12 }}>
-        <input
-          placeholder="Buscar usuarios por nombre, email o id"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          style={{ padding: 8, width: '100%', maxWidth: 480 }}
-        />
+      <div className="admin-toolbar">
+        <Link to="/admin" className="admin-back-link">
+          Volver al panel
+        </Link>
+
+        <label className="admin-search" aria-label="Buscar usuarios">
+          <IconSearch />
+          <input
+            type="search"
+            placeholder="Buscar por nombre, email, rol o estado"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </label>
       </div>
 
-      {loading && <p>Cargando usuarios...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {loading && (
+        <div className="admin-status-panel">
+          <p>Cargando usuarios...</p>
+        </div>
+      )}
 
-      {!loading && !error && (
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                <th style={{ textAlign: 'left', padding: 8 }}>ID</th>
-                <th style={{ textAlign: 'left', padding: 8 }}>Nombre</th>
-                <th style={{ textAlign: 'left', padding: 8 }}>Apellido</th>
-                <th style={{ textAlign: 'left', padding: 8 }}>Email</th>
-                <th style={{ textAlign: 'left', padding: 8 }}>Rol</th>
-                <th style={{ textAlign: 'left', padding: 8 }}>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((u) => (
-                <tr key={u.id || u._id || u.email}>
-                  <td style={{ padding: 8 }}>{u.id || u._id || ''}</td>
-                  <td style={{ padding: 8 }}>{u.nombre || u.firstName || ''}</td>
-                  <td style={{ padding: 8 }}>{u.apellido || u.lastName || ''}</td>
-                  <td style={{ padding: 8 }}>{u.email || u.username || ''}</td>
-                  <td style={{ padding: 8 }}>{u.role || (u.roles && u.roles.join(', ')) || ''}</td>
-                  <td style={{ padding: 8 }}>
-                    <Link to={`/admin/usuarios/${u.id || u._id}`} style={{ marginRight: 8 }}>Ver</Link>
-                  </td>
+      {!loading && error && (
+        <div className="admin-status-panel error">
+          <p>{error}</p>
+        </div>
+      )}
+
+      {!loading && !error && usuarios.length === 0 && (
+        <div className="admin-status-panel">
+          <p>No hay usuarios registrados</p>
+        </div>
+      )}
+
+      {!loading && !error && usuarios.length > 0 && (
+        <section className="admin-panel">
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Apellido</th>
+                  <th>Email</th>
+                  <th>Rol</th>
+                  <th>Estado</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {usuariosFiltrados.map((usuario) => {
+                  const estado = getAdminUserStatus(usuario);
+                  const statusClass =
+                    estado.toLowerCase() === 'inactivo' ? 'inactivo' : 'activo';
+
+                  return (
+                    <tr key={usuario.id}>
+                      <td data-label="ID">
+                        <Link
+                          to={`/admin/usuarios/${usuario.id}`}
+                          className="admin-link-inline"
+                        >
+                          #{usuario.id}
+                        </Link>
+                      </td>
+                      <td data-label="Nombre">{usuario.nombre || '-'}</td>
+                      <td data-label="Apellido">{usuario.apellido || '-'}</td>
+                      <td data-label="Email">{usuario.email || '-'}</td>
+                      <td data-label="Rol">
+                        <span className="admin-role-pill">
+                          {normalizarRol(usuario.role)}
+                        </span>
+                      </td>
+                      <td data-label="Estado">
+                        <span className={`admin-state-pill ${statusClass}`}>
+                          {estado}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
+      {!loading && !error && usuarios.length > 0 && usuariosFiltrados.length === 0 && (
+        <div className="admin-status-panel">
+          <p>No hay usuarios registrados</p>
         </div>
       )}
     </div>

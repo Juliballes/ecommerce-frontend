@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
@@ -37,6 +37,7 @@ const Navbar = () => {
   );
   const favoriteItems = useSelector((state) => state.favorites.items);
   const { usuario, logout, isAdmin } = useAuth();
+  const mostrarFlujoComercial = !isAdmin;
   const navigate = useNavigate();
   const location = useLocation();
   const [busqueda, setBusqueda] = useState('');
@@ -55,8 +56,12 @@ const Navbar = () => {
     navigate('/login');
   };
 
-  const irAProductos = () => {
+  const cerrarMenu = () => {
     setMenuAbierto(false);
+  };
+
+  const irAProductos = () => {
+    cerrarMenu();
     if (location.pathname !== '/') {
       navigate('/#productos');
     } else {
@@ -67,7 +72,7 @@ const Navbar = () => {
   return (
     <header className="site-header">
       <div className="topbar">
-        <p>Envío gratis en compras seleccionadas · Hasta 6 cuotas sin interés</p>
+        <p>Envio gratis en compras seleccionadas - Hasta 6 cuotas sin interes</p>
       </div>
 
       <nav className="navbar">
@@ -77,33 +82,40 @@ const Navbar = () => {
           </Link>
 
           <div className={`navbar-center ${menuAbierto ? 'abierto' : ''}`}>
-            <Link to="/" className="nav-link" onClick={() => setMenuAbierto(false)}>
+            <Link to="/" className="nav-link" onClick={cerrarMenu}>
               Inicio
             </Link>
-            <button type="button" className="nav-link nav-link-btn" onClick={irAProductos}>
-              Productos
-            </button>
-            {usuario && (
-              <Link to="/vender" className="nav-link" onClick={() => setMenuAbierto(false)}>
+
+            {mostrarFlujoComercial && (
+              <button type="button" className="nav-link nav-link-btn" onClick={irAProductos}>
+                Productos
+              </button>
+            )}
+
+            {mostrarFlujoComercial && usuario && (
+              <Link to="/vender" className="nav-link" onClick={cerrarMenu}>
                 Vender
               </Link>
             )}
+
             {isAdmin && (
-              <Link to="/admin" className="nav-link" onClick={() => setMenuAbierto(false)}>
-                Administración
+              <Link to="/admin" className="nav-link" onClick={cerrarMenu}>
+                Administracion
               </Link>
             )}
           </div>
 
-          <form className="navbar-search" onSubmit={handleBuscar}>
-            <IconSearch />
-            <input
-              type="text"
-              placeholder="Buscar"
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-            />
-          </form>
+          {mostrarFlujoComercial && (
+            <form className="navbar-search" onSubmit={handleBuscar}>
+              <IconSearch />
+              <input
+                type="text"
+                placeholder="Buscar"
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+              />
+            </form>
+          )}
 
           <div className="navbar-actions">
             <div className="nav-action-wrap">
@@ -118,43 +130,68 @@ const Navbar = () => {
               >
                 <IconUser />
               </button>
+
               {menuUsuario && usuario && (
                 <div className="nav-dropdown">
                   <p className="nav-dropdown-nombre">
                     Hola, {usuario.nombre || usuario.username || usuario.email}
                   </p>
-                  <Link to="/perfil" onClick={() => setMenuUsuario(false)}>Mi perfil</Link>
-                  <Link to="/vender" onClick={() => setMenuUsuario(false)}>Publicar producto</Link>
-                  <Link to="/mis-compras" onClick={() => setMenuUsuario(false)}>Mis compras</Link>
-                  <Link to="/mis-ventas" onClick={() => setMenuUsuario(false)}>Mis ventas</Link>
-                  <button type="button" onClick={handleLogout}>Cerrar sesión</button>
+                  <Link to="/perfil" onClick={() => setMenuUsuario(false)}>
+                    Mi perfil
+                  </Link>
+                  {isAdmin ? (
+                    <Link to="/admin" onClick={() => setMenuUsuario(false)}>
+                      Panel de administracion
+                    </Link>
+                  ) : (
+                    <>
+                      <Link to="/vender" onClick={() => setMenuUsuario(false)}>
+                        Publicar producto
+                      </Link>
+                      <Link to="/mis-compras" onClick={() => setMenuUsuario(false)}>
+                        Mis compras
+                      </Link>
+                      <Link to="/mis-ventas" onClick={() => setMenuUsuario(false)}>
+                        Mis ventas
+                      </Link>
+                    </>
+                  )}
+                  <button type="button" onClick={handleLogout}>
+                    Cerrar sesion
+                  </button>
                 </div>
               )}
             </div>
 
-            <Link to="/favoritos" className="nav-icon-btn" aria-label="Favoritos">
-              <IconHeart />
-              {favoriteItems.length > 0 && (
-                <span className="nav-badge">{favoriteItems.length}</span>
-              )}
-            </Link>
+            {mostrarFlujoComercial && (
+              <Link to="/favoritos" className="nav-icon-btn" aria-label="Favoritos">
+                <IconHeart />
+                {favoriteItems.length > 0 && (
+                  <span className="nav-badge">{favoriteItems.length}</span>
+                )}
+              </Link>
+            )}
 
-            <Link to="/carrito" className="nav-icon-btn" aria-label="Carrito">
-              <IconBag />
-              {cantidadTotal > 0 && (
-                <span className="nav-badge">{cantidadTotal}</span>
-              )}
-            </Link>
+            {mostrarFlujoComercial && (
+              <Link to="/carrito" className="nav-icon-btn" aria-label="Carrito">
+                <IconBag />
+                {cantidadTotal > 0 && (
+                  <span className="nav-badge">{cantidadTotal}</span>
+                )}
+              </Link>
+            )}
 
             {!usuario && (
-              <Link to="/login" className="nav-login-btn">Ingresar</Link>
+              <Link to="/login" className="nav-login-btn">
+                Ingresar
+              </Link>
             )}
           </div>
 
           <button
             type="button"
             className="navbar-hamburger"
-            aria-label="Menú"
+            aria-label="Menu"
             onClick={() => setMenuAbierto(!menuAbierto)}
           >
             <span />
@@ -166,7 +203,7 @@ const Navbar = () => {
       {!usuario && (
         <div className="navbar-promo">
           <Link to="/register">
-            Registrate o iniciá sesión para desbloquear tu experiencia personalizada →
+            Registrate o inicia sesion para desbloquear tu experiencia personalizada
           </Link>
         </div>
       )}
