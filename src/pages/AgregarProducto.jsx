@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { API_URL } from '../services/api';
+import { API_URL, apiFetch } from '../services/api';
 import './AgregarProducto.css';
 
 // Formulario para publicar productos (POST /api/productos).
@@ -61,16 +61,10 @@ const AgregarProducto = () => {
     };
 
     try {
-      const response = await fetch(`${API_URL}/productos`, {
+      await apiFetch('/productos', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(nuevoProducto),
+        body: nuevoProducto,
       });
-
-      if (!response.ok) throw new Error('Error al publicar el producto');
 
       alert('Producto publicado exitosamente.');
       navigate('/perfil');

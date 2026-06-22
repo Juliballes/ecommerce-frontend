@@ -1,7 +1,16 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { apiFetch } from '../services/api';
 
-// Contexto de auth: token JWT + datos del usuario, persistidos en localStorage
 const AuthContext = createContext();
+
+const mapPerfilToUsuario = (perfil) => ({
+  id: perfil.id,
+  email: perfil.email,
+  nombre: perfil.nombre,
+  username: perfil.nombreUsuario,
+  role: perfil.role,
+  activo: perfil.activo,
+});
 
 const cargarUsuarioGuardado = () => {
   try {
@@ -9,40 +18,87 @@ const cargarUsuarioGuardado = () => {
     if (!raw || raw === 'null') return null;
     return JSON.parse(raw);
   } catch {
-    // Si quedó basura en localStorage (ej. un JWT), limpio y arranco de cero
     localStorage.removeItem('usuario');
     return null;
   }
 };
 
 export const AuthProvider = ({ children }) => {
-  // Leo token y usuario del localStorage por si ya había sesión abierta
-  const [token, setToken] = useState(localStorage.getItem('token') || null);
   const [usuario, setUsuario] = useState(cargarUsuarioGuardado);
+  const [authReady, setAuthReady] = useState(false);
 
-  const login = (tokenRecibido, usuarioRecibido) => {
-    setToken(tokenRecibido);
+  const guardarUsuario = (usuarioRecibido) => {
     setUsuario(usuarioRecibido);
-    localStorage.setItem('token', tokenRecibido);
     localStorage.setItem('usuario', JSON.stringify(usuarioRecibido));
+    localStorage.removeItem('token');
+  };
+
+  const limpiarSesionLocal = () => {
+    setUsuario(null);
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('token');
+  };
+
+  useEffect(() => {
+    let activo = true;
+
+    const validarSesion = async () => {
+      try {
+        const perfil = await apiFetch('/usuarios/me');
+        if (activo) guardarUsuario(mapPerfilToUsuario(perfil));
+      } catch {
+        if (activo) limpiarSesionLocal();
+      } finally {
+        if (activo) setAuthReady(true);
+      }
+    };
+
+    validarSesion();
+
+    return () => {
+      activo = false;
+    };
+  }, []);
+
+  const login = (usuarioRecibido) => {
+    guardarUsuario(usuarioRecibido);
   };
 
   const updateUsuario = (usuarioActualizado) => {
-    setUsuario(usuarioActualizado);
-    localStorage.setItem('usuario', JSON.stringify(usuarioActualizado));
+    guardarUsuario({
+      ...usuario,
+      id: usuarioActualizado.id,
+      email: usuarioActualizado.email,
+      nombre: usuarioActualizado.nombre,
+      username: usuarioActualizado.nombreUsuario ?? usuarioActualizado.username,
+      role: usuarioActualizado.role,
+      activo: usuarioActualizado.activo,
+    });
   };
 
-  const logout = () => {
-    setToken(null);
-    setUsuario(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('usuario');
+  const logout = async () => {
+    try {
+      await apiFetch('/auth/logout', { method: 'POST' });
+    } finally {
+      limpiarSesionLocal();
+    }
   };
 
+  const token = usuario ? 'cookie-session' : null;
   const isAdmin = usuario?.role === 'ADMIN' || usuario?.roles?.includes('ADMIN');
 
   return (
-    <AuthContext.Provider value={{ token, usuario, login, logout, updateUsuario, isAdmin }}>
+    <AuthContext.Provider
+      value={{
+        token,
+        usuario,
+        authReady,
+        login,
+        logout,
+        updateUsuario,
+        isAdmin,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

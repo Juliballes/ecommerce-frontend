@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { apiFetch, API_URL } from '../services/api';
+import { apiFetch } from '../services/api';
 import './FormAuth.css';
 
-// Login: POST /api/auth/login — soporta JWT en JSON o en texto plano
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState(null);
@@ -12,7 +11,6 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  // Actualizo el form con spread: copio el estado anterior y cambio solo el campo editado
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -23,35 +21,23 @@ const Login = () => {
     setError(null);
 
     try {
-      const response = await fetch(`${API_URL}/auth/login`, {
+      await apiFetch('/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: form,
       });
 
-      if (!response.ok) throw new Error('Email o contraseña incorrectos');
-
-      const contentType = response.headers.get('content-type') ?? '';
-      const rawBody = await response.text();
-      let tokenJwt = rawBody.trim();
-
-      if (contentType.includes('application/json')) {
-        const payload = JSON.parse(rawBody);
-        tokenJwt = payload?.token?.trim?.() ?? '';
-      }
-
-      if (!tokenJwt) throw new Error('La respuesta de login no incluyó un token válido');
-
-      const perfil = await apiFetch('/usuarios/me', { token: tokenJwt });
-      login(tokenJwt, {
+      const perfil = await apiFetch('/usuarios/me');
+      login({
+        id: perfil.id,
         email: perfil.email,
         nombre: perfil.nombre,
         username: perfil.nombreUsuario,
         role: perfil.role,
+        activo: perfil.activo,
       });
       navigate('/');
     } catch (err) {
-      setError(err.message);
+      setError(err.status === 401 ? 'Email o contrasena incorrectos' : err.message);
     } finally {
       setLoading(false);
     }
@@ -60,7 +46,7 @@ const Login = () => {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h2 className="auth-titulo">Iniciar sesión</h2>
+        <h2 className="auth-titulo">Iniciar sesion</h2>
 
         {error && <div className="auth-error">{error}</div>}
 
@@ -77,13 +63,13 @@ const Login = () => {
           </div>
 
           <div className="form-grupo">
-            <label>Contraseña</label>
+            <label>Contrasena</label>
             <input
               type="password"
               name="password"
               value={form.password}
               onChange={handleChange}
-              placeholder="Tu contraseña"
+              placeholder="Tu contrasena"
             />
           </div>
 
@@ -97,7 +83,7 @@ const Login = () => {
         </div>
 
         <p className="auth-link">
-          ¿No tenés cuenta? <Link to="/register">Registrate</Link>
+          No tenes cuenta? <Link to="/register">Registrate</Link>
         </p>
       </div>
     </div>
