@@ -9,4 +9,10 @@ services/ centraliza las llamadas a la API y la comunicación con el backend.
 
 assets/ almacena imágenes, íconos y otros recursos estáticos.
 
-Actualmente, el estado global de la aplicación se gestiona mediante Redux
+El estado de carrito y favoritos se gestiona mediante Redux.
+
+Se implementó el uso de cookies HttpOnly.
+El backend valida email/pass y responde con una cookie. Lee (el backend) el JWT desde la cookie en JwtFilter.
+Cada request protegido manda la cookie automáticamente con credentials: 'include'.
+El frontend ya no guarda JWT en localStorage.
+
