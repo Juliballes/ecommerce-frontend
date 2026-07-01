@@ -209,6 +209,9 @@ const Perfil = () => {
           <section className="perfil-seccion">
             <div className="perfil-seccion-header">
               <h2>Mis publicaciones</h2>
+              <Link to="/vender" className="perfil-link">
+                + Agregar producto
+              </Link>
             </div>
 
             {!perfil.publicaciones?.length ? (

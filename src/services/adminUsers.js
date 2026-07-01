@@ -11,14 +11,10 @@ const leerRespuesta = async (response) => {
   }
 };
 
-const adminUsersFetch = async (path, { token, method = 'GET' } = {}) => {
+const adminUsersFetch = async (path, { method = 'GET' } = {}) => {
   const headers = {
     'Content-Type': 'application/json',
   };
-
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
 
   let response;
 
@@ -26,6 +22,7 @@ const adminUsersFetch = async (path, { token, method = 'GET' } = {}) => {
     response = await fetch(`${API_URL}${path}`, {
       method,
       headers,
+      credentials: 'include',
     });
   } catch (error) {
     error.isNetworkError = true;
@@ -44,10 +41,13 @@ const adminUsersFetch = async (path, { token, method = 'GET' } = {}) => {
   return data;
 };
 
-export const fetchAdminUsers = (token) => adminUsersFetch('/usuarios', { token });
+export const fetchAdminUsers = () => adminUsersFetch('/usuarios');
 
-export const fetchAdminUserById = (id, token) =>
-  adminUsersFetch(`/usuarios/${id}`, { token });
+export const fetchAdminUserById = (id) =>
+  adminUsersFetch(`/usuarios/${id}`);
+
+export const deleteAdminUser = (id) =>
+  adminUsersFetch(`/usuarios/${id}`, { method: 'DELETE' });
 
 export const normalizeUsersList = (payload) => {
   if (Array.isArray(payload)) return payload;

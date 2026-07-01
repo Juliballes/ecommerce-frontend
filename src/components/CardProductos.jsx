@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAuth } from '../context/AuthContext';
 import { addFavorite, removeFromFavorite } from '../store/slices/favoriteSlice';
+import { addFavoriteApi, removeFavoriteApi } from '../services/favoritesApi';
 import { setCartItems } from '../store/slices/cartSlice';
 import { addCartItem } from '../services/cartApi';
 import { getProductImageSrc } from '../utils/productImages';
@@ -27,8 +28,27 @@ const CardProductos = ({ product, children }) => {
   const handleFavoriteClick = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (isFavorite) dispatch(removeFromFavorite(product.id));
-    else dispatch(addFavorite(product));
+
+    if (isFavorite) {
+      const favoriteItem = favoriteItems.find((item) => item.id === product.id);
+      dispatch(removeFromFavorite(product.id));
+      if (token && favoriteItem?.favoritoId) {
+        try {
+          await removeFavoriteApi(token, favoriteItem.favoritoId);
+        } catch {
+          dispatch(addFavorite(favoriteItem));
+        }
+      }
+    } else {
+      if (token) {
+        try {
+          const saved = await addFavoriteApi(token, product.id);
+          dispatch(addFavorite({ ...product, favoritoId: saved.favoritoId }));
+        } catch { /* ignore */ }
+      } else {
+        dispatch(addFavorite(product));
+      }
+    }
   };
 
   const handleAddToCart = async (e) => {

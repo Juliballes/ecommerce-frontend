@@ -139,7 +139,8 @@
   height: 16px;
   padding: 0 4px;
   background: var(--color-text);
-  color: #fff;
+  color: var(--color-bg);
+  border: 1px solid var(--color-bg);
   border-radius: 999px;
   font-size: 0.65rem;
   font-weight: 700;
@@ -152,7 +153,7 @@
   margin-left: 0.5rem;
   padding: 0.45rem 1rem;
   background: var(--color-text);
-  color: #fff;
+  color: var(--color-bg);
   text-decoration: none;
   font-size: 0.8rem;
   font-weight: 600;
@@ -169,7 +170,8 @@
   top: calc(100% + 8px);
   right: 0;
   min-width: 200px;
-  background: #fff;
+  /* Usa la variable global para acompañar el tema seleccionado. */
+  background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
@@ -260,7 +262,7 @@
     left: 0;
     right: 0;
     flex-direction: column;
-    background: #fff;
+    background: var(--color-bg);
     border-bottom: 1px solid var(--color-border);
     padding: 1rem 1.5rem 1.5rem;
     gap: 1rem;

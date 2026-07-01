@@ -7,7 +7,7 @@
 }
 
 .auth-card {
-  background: #fff;
+  background: var(--color-bg-muted);
   padding: 2.5rem;
   width: 100%;
   max-width: 440px;
@@ -15,6 +15,7 @@
 }
 
 .auth-titulo {
+  color: var(--color-text);
   font-size: 1.75rem;
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -22,8 +23,9 @@
 }
 
 .auth-error {
-  background: #fef2f2;
+  background: color-mix(in srgb, var(--color-error) 12%, var(--color-bg));
   color: var(--color-error);
+  border: 1px solid color-mix(in srgb, var(--color-error) 35%, transparent);
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
   font-size: 0.9rem;
@@ -47,30 +49,44 @@
   gap: 0.35rem;
 }
 
-.form-grupo label {
+.auth-card .form-grupo label {
   font-weight: 600;
   font-size: 0.85rem;
   color: var(--color-text);
 }
 
-.form-grupo input {
+.form-grupo input,
+.form-grupo select {
   padding: 0.75rem;
+  background: var(--color-bg);
+  color: var(--color-text);
   border: 1px solid var(--color-border);
+  border-radius: 4px;
   font-size: 0.95rem;
-  transition: border-color var(--transition);
+  font-family: inherit;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
 }
 
-.form-grupo input:focus {
+.form-grupo input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+.form-grupo input:focus,
+.form-grupo select:focus {
   outline: none;
   border-color: var(--color-text);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-text) 15%, transparent);
 }
 
 .btn-auth {
   width: 100%;
   padding: 1rem;
   background: var(--color-text);
-  color: #fff;
-  border: none;
+  color: var(--color-bg);
+  border: 1px solid var(--color-text);
   border-radius: 999px;
   font-size: 0.9rem;
   font-weight: 700;
@@ -78,15 +94,21 @@
   text-transform: uppercase;
   cursor: pointer;
   margin-top: 0.5rem;
-  transition: background var(--transition);
+  transition:
+    background var(--transition),
+    color var(--transition),
+    border-color var(--transition);
 }
 
 .btn-auth:hover:not(:disabled) {
   background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
 }
 
 .btn-auth:disabled {
-  background: #ccc;
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
   cursor: not-allowed;
 }
 

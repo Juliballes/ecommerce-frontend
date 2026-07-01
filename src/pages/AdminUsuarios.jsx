@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
+  deleteAdminUser,
   fetchAdminUsers,
   getAdminRequestMessage,
   getAdminUserStatus,
@@ -19,11 +20,12 @@ const IconSearch = () => (
 const normalizarRol = (role) => String(role || '-').toUpperCase();
 
 const AdminUsuarios = () => {
-  const { token } = useAuth();
+  const { token, usuario: usuarioActual } = useAuth();
   const [usuarios, setUsuarios] = useState([]);
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [operandoId, setOperandoId] = useState(null);
 
   useEffect(() => {
     let activo = true;
@@ -33,7 +35,7 @@ const AdminUsuarios = () => {
       setError(null);
 
       try {
-        const data = await fetchAdminUsers(token);
+        const data = await fetchAdminUsers();
         if (!activo) return;
         setUsuarios(normalizeUsersList(data));
       } catch (err) {
@@ -58,6 +60,36 @@ const AdminUsuarios = () => {
       activo = false;
     };
   }, [token]);
+
+  const handleEliminarUsuario = async (usuario) => {
+    if (usuarioActual?.id === usuario.id) {
+      setError('No podes eliminar tu propio usuario administrador.');
+      return;
+    }
+
+    const confirmado = window.confirm(`Eliminar el usuario ${usuario.email}?`);
+    if (!confirmado) return;
+
+    setOperandoId(usuario.id);
+    setError(null);
+
+    try {
+      await deleteAdminUser(usuario.id);
+      setUsuarios((actuales) =>
+        actuales.map((item) =>
+          item.id === usuario.id ? { ...item, activo: false } : item
+        )
+      );
+    } catch (err) {
+      setError(
+        getAdminRequestMessage(err, {
+          defaultMessage: 'No se pudo eliminar el usuario.',
+        })
+      );
+    } finally {
+      setOperandoId(null);
+    }
+  };
 
   const usuariosFiltrados = useMemo(() => {
     const term = query.trim().toLowerCase();
@@ -134,6 +166,7 @@ const AdminUsuarios = () => {
                   <th>Email</th>
                   <th>Rol</th>
                   <th>Estado</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -164,6 +197,28 @@ const AdminUsuarios = () => {
                         <span className={`admin-state-pill ${statusClass}`}>
                           {estado}
                         </span>
+                      </td>
+                      <td data-label="Acciones">
+                        <div className="admin-row-actions">
+                          <Link
+                            to={`/admin/usuarios/${usuario.id}`}
+                            className="admin-link-inline"
+                          >
+                            Ver
+                          </Link>
+                          <button
+                            type="button"
+                            className="admin-danger-button"
+                            disabled={
+                              operandoId === usuario.id ||
+                              usuarioActual?.id === usuario.id ||
+                              estado.toLowerCase() === 'inactivo'
+                            }
+                            onClick={() => handleEliminarUsuario(usuario)}
+                          >
+                            {operandoId === usuario.id ? 'Eliminando...' : 'Eliminar'}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );

@@ -113,8 +113,8 @@
   width: 100%;
   padding: 1rem;
   background: var(--color-text);
-  color: #fff;
-  border: none;
+  color: var(--color-bg);
+  border: 1px solid var(--color-text);
   border-radius: 999px;
   font-size: 0.9rem;
   font-weight: 700;
@@ -122,22 +122,28 @@
   text-transform: uppercase;
   cursor: pointer;
   margin-top: 1rem;
-  transition: background var(--transition);
+  transition:
+    background var(--transition),
+    color var(--transition),
+    border-color var(--transition);
 }
 
 .btn-agregar-detalle:hover:not(:disabled) {
   background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
 }
 
 .btn-agregar-detalle:disabled {
-  background: #ccc;
+  background: var(--color-bg-muted);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
   cursor: not-allowed;
 }
 
 .btn-favorito-detalle {
   width: 100%;
   padding: 1rem;
-  background: #fff;
+  background: var(--color-bg);
   color: var(--color-text);
   border: 1px solid var(--color-border-dark);
   border-radius: 999px;
@@ -147,7 +153,10 @@
   text-transform: uppercase;
   cursor: pointer;
   margin-top: 0.75rem;
-  transition: background var(--transition);
+  transition:
+    background var(--transition),
+    color var(--transition),
+    border-color var(--transition);
 }
 
 .btn-favorito-detalle:hover {

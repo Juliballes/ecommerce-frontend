@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import ScrollToHash from './components/ScrollToHash';
 import ProtectedRoute from './components/ProtectedRoute';
 import CartSync from './components/CartSync';
+import FavoritesSync from './components/FavoritesSync';
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import Carrito from './pages/Carrito';
@@ -10,7 +11,7 @@ import Favorite from './pages/Favorite';
 import Buscar from './pages/Buscar';
 import Login from './pages/Login';
 import Register from './pages/Register';
-// AgregarProducto ya no forma parte de un módulo admin
+import AgregarProducto from './pages/AgregarProducto';
 import MisCompras from './pages/MisCompras';
 import MisVentas from './pages/MisVentas';
 import Perfil from './pages/Perfil';
@@ -24,6 +25,7 @@ function App() {
   return (
     <div>
       <CartSync />
+      <FavoritesSync />
       <Navbar />
       <ScrollToHash />
       <Routes>
@@ -64,6 +66,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Perfil />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/vender"
+          element={
+            <ProtectedRoute>
+              <AgregarProducto />
             </ProtectedRoute>
           }
         />
