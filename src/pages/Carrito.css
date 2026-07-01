@@ -5,6 +5,7 @@
 }
 
 .carrito-titulo {
+  color: var(--color-text);
   font-size: 1.75rem;
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -20,7 +21,7 @@
 .carrito-item {
   display: flex;
   gap: 1.2rem;
-  background: white;
+  background: var(--color-bg-muted);
   border: 1px solid var(--color-border);
   padding: 1rem;
   align-items: center;
@@ -34,11 +35,11 @@
 }
 
 .item-info { flex: 1; }
-.item-nombre { font-weight: 700; margin: 0 0 0.3rem; }
+.item-nombre { color: var(--color-text); font-weight: 700; margin: 0 0 0.3rem; }
 .item-precio { color: var(--color-text); font-weight: 600; margin: 0 0 0.2rem; }
 .item-cantidad {
   min-width: 2rem;
-  color: #333;
+  color: var(--color-text);
   font-size: 0.9rem;
   font-weight: 700;
   text-align: center;
@@ -56,7 +57,7 @@
   height: 28px;
   border: 1px solid var(--color-border-dark);
   border-radius: 50%;
-  background: white;
+  background: var(--color-bg);
   color: var(--color-text);
   cursor: pointer;
   font-size: 1rem;
@@ -68,18 +69,26 @@
   background: var(--color-bg-muted);
 }
 
+.btn-cantidad:disabled {
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
 .item-subtotal {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 0.5rem;
+  color: var(--color-text);
   font-weight: 700;
 }
 
 .btn-eliminar {
   background: none;
-  border: 1px solid #e53935;
-  color: #e53935;
+  border: 1px solid var(--color-error);
+  color: var(--color-error);
   padding: 0.3rem 0.7rem;
   border-radius: 5px;
   cursor: pointer;
@@ -88,13 +97,13 @@
 }
 
 .btn-eliminar:hover {
-  background: #e53935;
-  color: white;
+  background: var(--color-error);
+  color: var(--color-bg);
 }
 
 .carrito-footer {
   margin-top: 2rem;
-  background: white;
+  background: var(--color-bg-muted);
   border: 1px solid var(--color-border);
   padding: 1.5rem;
 }
@@ -106,6 +115,7 @@
   justify-content: space-between;
   font-size: 1.2rem;
   font-weight: 700;
+  color: var(--color-text);
   margin-bottom: 1.2rem;
 }
 
@@ -117,7 +127,7 @@
 }
 
 .btn-vaciar {
-  background: white;
+  background: var(--color-bg);
   border: 1px solid var(--color-border-dark);
   color: var(--color-text);
   padding: 0.6rem 1.2rem;
@@ -137,6 +147,7 @@
 }
 
 .carrito-vacio h2 {
+  color: var(--color-text);
   font-size: 1.75rem;
   font-weight: 800;
   margin-bottom: 0.5rem;
@@ -144,8 +155,8 @@
 
 .btn-checkout {
   background: var(--color-text);
-  color: white;
-  border: none;
+  color: var(--color-bg);
+  border: 1px solid var(--color-text);
   padding: 0.85rem 1.75rem;
   border-radius: 999px;
   font-weight: 700;
@@ -156,13 +167,16 @@
   transition: background var(--transition);
 }
 
-.btn-checkout:hover { background: var(--color-accent-hover); }
+.btn-checkout:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+}
 
-.btn-ir-home {
+.carrito-vacio .btn-ir-home {
   margin-top: 1.5rem;
   background: var(--color-text);
-  color: white;
-  border: none;
+  color: var(--color-bg);
+  border: 1px solid var(--color-text);
   padding: 0.85rem 1.75rem;
   border-radius: 999px;
   font-weight: 700;
@@ -174,12 +188,13 @@
 
 .checkout-seccion {
   margin-top: 1.5rem;
-  background: white;
+  background: var(--color-bg-muted);
   border: 1px solid var(--color-border);
   padding: 1.25rem;
 }
 
 .checkout-seccion h3 {
+  color: var(--color-text);
   margin: 0 0 1rem;
   font-size: 1.1rem;
 }
@@ -187,13 +202,15 @@
 .checkout-select {
   width: 100%;
   padding: 0.6rem;
-  border: 1px solid #ddd;
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   margin-bottom: 0.75rem;
 }
 
 .checkout-ayuda {
-  color: #666;
+  color: var(--color-text-muted);
   font-size: 0.9rem;
   margin: 0.5rem 0;
 }
@@ -201,7 +218,7 @@
 .btn-link-dir {
   background: none;
   border: none;
-  color: #007bff;
+  color: var(--color-text);
   cursor: pointer;
   font-weight: 600;
   padding: 0;
@@ -216,6 +233,18 @@
 
 .form-direccion input {
   padding: 0.5rem;
-  border: 1px solid #ddd;
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
+}
+
+.btn-eliminar:disabled,
+.btn-vaciar:disabled,
+.btn-checkout:disabled {
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border-color: var(--color-border);
+  cursor: not-allowed;
+  opacity: 0.7;
 }

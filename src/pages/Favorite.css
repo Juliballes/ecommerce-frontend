@@ -5,6 +5,7 @@
 }
 
 .favoritos-titulo {
+  color: var(--color-text);
   font-size: 1.75rem;
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -20,7 +21,7 @@
 .favorito-item {
   display: flex;
   gap: 1.2rem;
-  background: white;
+  background: var(--color-bg-muted);
   border: 1px solid var(--color-border);
   padding: 1rem;
   align-items: center;
@@ -49,35 +50,40 @@
 }
 
 .favorito-nombre {
+  color: var(--color-text);
   font-weight: 700;
   margin: 0 0 0.3rem;
 }
 
 .favorito-precio {
-  color: #e65100;
+  color: var(--color-sale);
   font-weight: 600;
   margin: 0 0 0.2rem;
 }
 
 .favorito-stock {
-  color: #666;
+  color: var(--color-text-muted);
   font-size: 0.9rem;
   margin: 0;
 }
 
 .btn-ver-detalle {
-  background: #007bff;
-  color: white;
+  background: var(--color-text);
+  color: var(--color-bg);
   padding: 0.5rem 1rem;
   border-radius: 6px;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.85rem;
-  transition: background 0.2s;
+  border: 1px solid var(--color-text);
+  transition:
+    background var(--transition),
+    border-color var(--transition);
 }
 
 .btn-ver-detalle:hover {
-  background: #0056b3;
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
 }
 
 .favorito-acciones {
@@ -89,19 +95,21 @@
 
 .btn-quitar-favorito {
   background: none;
-  border: 1px solid #e53935;
-  color: #e53935;
+  border: 1px solid var(--color-error);
+  color: var(--color-error);
   padding: 0.3rem 0.7rem;
   border-radius: 5px;
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 600;
-  transition: all 0.2s;
+  transition:
+    background var(--transition),
+    color var(--transition);
 }
 
 .btn-quitar-favorito:hover {
-  background: #e53935;
-  color: white;
+  background: var(--color-error);
+  color: var(--color-bg);
 }
 
 .favoritos-vacio {
@@ -110,19 +118,20 @@
 }
 
 .favoritos-vacio h2 {
+  color: var(--color-text);
   font-size: 1.8rem;
   margin-bottom: 0.5rem;
 }
 
 .favoritos-vacio p {
-  color: #666;
+  color: var(--color-text-muted);
   margin-bottom: 1.5rem;
 }
 
 .btn-ir-home {
-  background: #007bff;
-  color: white;
-  border: none;
+  background: var(--color-text);
+  color: var(--color-bg);
+  border: 1px solid var(--color-text);
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   font-size: 1rem;
@@ -131,5 +140,6 @@
 }
 
 .btn-ir-home:hover {
-  background: #0056b3;
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
 }

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import './Navbar.css';
 
 const IconSearch = () => (
@@ -31,12 +32,26 @@ const IconBag = () => (
   </svg>
 );
 
+// Muestra el icono de la accion disponible: sol en oscuro y luna en claro.
+const IconTheme = ({ isDark }) =>
+  isDark ? (
+    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+    </svg>
+  ) : (
+    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M20.5 15.2A8 8 0 018.8 3.5 8.5 8.5 0 1020.5 15.2z" />
+    </svg>
+  );
+
 const Navbar = () => {
   const cantidadTotal = useSelector((state) =>
     state.cart.items.reduce((acc, item) => acc + item.cantidad, 0)
   );
   const favoriteItems = useSelector((state) => state.favorites.items);
   const { usuario, logout, isAdmin } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const mostrarFlujoComercial = !isAdmin;
   const navigate = useNavigate();
   const location = useLocation();
@@ -118,6 +133,17 @@ const Navbar = () => {
           )}
 
           <div className="navbar-actions">
+            {/* Selector global de tema con etiquetas accesibles. */}
+            <button
+              type="button"
+              className="nav-icon-btn"
+              aria-label={isDark ? 'Activar modo claro' : 'Activar modo oscuro'}
+              title={isDark ? 'Modo claro' : 'Modo oscuro'}
+              onClick={toggleTheme}
+            >
+              <IconTheme isDark={isDark} />
+            </button>
+
             <div className="nav-action-wrap">
               <button
                 type="button"
