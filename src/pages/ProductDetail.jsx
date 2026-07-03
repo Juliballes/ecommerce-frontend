@@ -3,10 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAuth } from '../context/AuthContext';
 import { apiFetch, API_URL } from '../services/api';
-import { addCartItem } from '../services/cartApi';
-import { setCartItems } from '../store/slices/cartSlice';
-import { addFavorite, removeFromFavorite } from '../store/slices/favoriteSlice';
-import { addFavoriteApi, removeFavoriteApi } from '../services/favoritesApi';
+import { addCartItemAsync } from '../store/slices/cartSlice';
+import { addFavoriteAsync, removeFavoriteAsync } from '../store/slices/favoriteSlice';
 import { getProductImageSrc } from '../utils/productImages';
 import './ProductDetail.css';
 
@@ -90,8 +88,9 @@ const ProductDetail = () => {
 
     setAgregandoCarrito(true);
     try {
-      const items = await addCartItem(token, product.id, 1);
-      dispatch(setCartItems(items));
+      await dispatch(
+        addCartItemAsync({ token, productId: product.id, quantity: 1 })
+      ).unwrap();
       setAgregado(true);
       setTimeout(() => setAgregado(false), 2000);
     } catch {
@@ -181,24 +180,23 @@ const ProductDetail = () => {
                 onClick={async () => {
                   if (isFavorite) {
                     const favoriteItem = favoriteItems.find((item) => item.id === product.id);
-                    dispatch(removeFromFavorite(product.id));
-                    if (token && favoriteItem?.favoritoId) {
-                      try {
-                        await removeFavoriteApi(token, favoriteItem.favoritoId);
-                      } catch {
-                        dispatch(addFavorite(favoriteItem));
-                      }
+
+                    try {
+                      await dispatch(
+                        removeFavoriteAsync({
+                          token,
+                          productId: product.id,
+                          favoritoId: favoriteItem?.favoritoId,
+                        })
+                      ).unwrap();
+                    } catch {
+                      // El slice conserva el estado anterior si la operacion falla.
                     }
                   } else {
-                    if (token) {
-                      try {
-                        const saved = await addFavoriteApi(token, product.id);
-                        dispatch(addFavorite({ ...product, favoritoId: saved.favoritoId }));
-                      } catch {
-                        // Si falla la persistencia, evitamos romper la vista.
-                      }
-                    } else {
-                      dispatch(addFavorite(product));
+                    try {
+                      await dispatch(addFavoriteAsync({ token, product })).unwrap();
+                    } catch {
+                      // Si falla la persistencia, evitamos romper la vista.
                     }
                   }
                 }}
