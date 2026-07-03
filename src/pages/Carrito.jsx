@@ -2,13 +2,12 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { setCartItems } from '../store/slices/cartSlice';
 import {
-  clearRemoteCart,
-  removeCartLine,
-  updateCartItemQuantity,
-} from '../services/cartApi';
-import { checkoutCart } from '../services/pedidoApi';
+  checkoutCartAsync,
+  clearCartAsync,
+  removeCartItemAsync,
+  updateCartItemQuantityAsync,
+} from '../store/slices/cartSlice';
 import { getProductImageSrc } from '../utils/productImages';
 import './Carrito.css';
 
@@ -31,13 +30,12 @@ const Carrito = () => {
     return false;
   };
 
-  const aplicarCarrito = async (operacion, mensajeError) => {
+  const ejecutarOperacionCarrito = async (operacion, mensajeError) => {
     if (!requerirSesion()) return;
 
     setOperando(true);
     try {
-      const carritoActualizado = await operacion();
-      dispatch(setCartItems(carritoActualizado));
+      await operacion().unwrap();
     } catch {
       alert(mensajeError);
     } finally {
@@ -46,32 +44,43 @@ const Carrito = () => {
   };
 
   const sumarCantidad = (item) => {
-    aplicarCarrito(
-      () => updateCartItemQuantity(token, item.id, item.cantidad + 1),
+    ejecutarOperacionCarrito(
+      () =>
+        dispatch(
+          updateCartItemQuantityAsync({
+            token,
+            productId: item.id,
+            quantity: item.cantidad + 1,
+          })
+        ),
       'No se pudo actualizar la cantidad.'
     );
   };
 
   const restarCantidad = (item) => {
-    aplicarCarrito(
-      () => updateCartItemQuantity(token, item.id, item.cantidad - 1),
+    ejecutarOperacionCarrito(
+      () =>
+        dispatch(
+          updateCartItemQuantityAsync({
+            token,
+            productId: item.id,
+            quantity: item.cantidad - 1,
+          })
+        ),
       'No se pudo actualizar la cantidad.'
     );
   };
 
   const eliminarItem = (item) => {
-    aplicarCarrito(
-      () =>
-        item.lineaId
-          ? removeCartLine(token, item.lineaId)
-          : updateCartItemQuantity(token, item.id, 0),
+    ejecutarOperacionCarrito(
+      () => dispatch(removeCartItemAsync({ token, item })),
       'No se pudo eliminar el producto del carrito.'
     );
   };
 
   const vaciarCarrito = () => {
-    aplicarCarrito(
-      () => clearRemoteCart(token),
+    ejecutarOperacionCarrito(
+      () => dispatch(clearCartAsync(token)),
       'No se pudo vaciar el carrito.'
     );
   };
@@ -81,8 +90,7 @@ const Carrito = () => {
 
     setOperando(true);
     try {
-      const pedido = await checkoutCart(token);
-      dispatch(setCartItems([]));
+      const pedido = await dispatch(checkoutCartAsync(token)).unwrap();
       setPedidoConfirmado(pedido);
       setCompraConfirmada(true);
     } catch {

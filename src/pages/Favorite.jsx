@@ -1,7 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { addFavorite, removeFromFavorite } from '../store/slices/favoriteSlice';
-import { removeFavoriteApi } from '../services/favoritesApi';
+import { removeFavoriteAsync } from '../store/slices/favoriteSlice';
 import { useAuth } from '../context/AuthContext';
 import { getProductImageSrc } from '../utils/productImages';
 import './Favorite.css';
@@ -57,13 +56,16 @@ const Favorite = () => {
                 type="button"
                 className="btn-quitar-favorito"
                 onClick={async () => {
-                  dispatch(removeFromFavorite(product.id));
-                  if (token && product.favoritoId) {
-                    try {
-                      await removeFavoriteApi(token, product.favoritoId);
-                    } catch {
-                      dispatch(addFavorite(product));
-                    }
+                  try {
+                    await dispatch(
+                      removeFavoriteAsync({
+                        token,
+                        productId: product.id,
+                        favoritoId: product.favoritoId,
+                      })
+                    ).unwrap();
+                  } catch {
+                    alert('No se pudo quitar el producto de favoritos.');
                   }
                 }}
               >

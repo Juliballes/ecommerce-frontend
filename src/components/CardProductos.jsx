@@ -2,10 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAuth } from '../context/AuthContext';
-import { addFavorite, removeFromFavorite } from '../store/slices/favoriteSlice';
-import { addFavoriteApi, removeFavoriteApi } from '../services/favoritesApi';
-import { setCartItems } from '../store/slices/cartSlice';
-import { addCartItem } from '../services/cartApi';
+import { addFavoriteAsync, removeFavoriteAsync } from '../store/slices/favoriteSlice';
+import { addCartItemAsync } from '../store/slices/cartSlice';
 import { getProductImageSrc } from '../utils/productImages';
 import './CardProductos.css';
 
@@ -31,22 +29,23 @@ const CardProductos = ({ product, children }) => {
 
     if (isFavorite) {
       const favoriteItem = favoriteItems.find((item) => item.id === product.id);
-      dispatch(removeFromFavorite(product.id));
-      if (token && favoriteItem?.favoritoId) {
-        try {
-          await removeFavoriteApi(token, favoriteItem.favoritoId);
-        } catch {
-          dispatch(addFavorite(favoriteItem));
-        }
+
+      try {
+        await dispatch(
+          removeFavoriteAsync({
+            token,
+            productId: product.id,
+            favoritoId: favoriteItem?.favoritoId,
+          })
+        ).unwrap();
+      } catch {
+        // El slice conserva el estado anterior si la operacion falla.
       }
     } else {
-      if (token) {
-        try {
-          const saved = await addFavoriteApi(token, product.id);
-          dispatch(addFavorite({ ...product, favoritoId: saved.favoritoId }));
-        } catch { /* ignore */ }
-      } else {
-        dispatch(addFavorite(product));
+      try {
+        await dispatch(addFavoriteAsync({ token, product })).unwrap();
+      } catch {
+        // Si falla la persistencia, evitamos romper la vista.
       }
     }
   };
@@ -63,8 +62,9 @@ const CardProductos = ({ product, children }) => {
 
     setAgregando(true);
     try {
-      const items = await addCartItem(token, product.id, 1);
-      dispatch(setCartItems(items));
+      await dispatch(
+        addCartItemAsync({ token, productId: product.id, quantity: 1 })
+      ).unwrap();
     } catch {
       alert('No se pudo agregar el producto al carrito.');
     } finally {
